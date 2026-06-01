@@ -1,0 +1,32 @@
+# Compilation artifacts
+*.o
+flip
+
+# macOS metadata junk
+__MACOSX/
+.DS_Store
+
+# IDEs & Editors
+.vscode/
+.idea/
+
+# Emacs junk
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list/
+tramp
+.\#*
+
+# Nix & Devenv
+.devenv/
+.direnv/
+.ezm/
+result
+result-*
+
+# Nsight
+*.nsys-rep
+*.ncu-rep
