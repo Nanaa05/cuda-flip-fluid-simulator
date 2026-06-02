@@ -4,8 +4,23 @@
 #include <vector>
 #include <cstddef>
 #include <cstdint>
+#include <chrono>
 
 namespace flipcpu {
+
+struct CpuTelemetry {
+    double t1 = 0.0, t2 = 0.0, t3 = 0.0, t4 = 0.0, t5 = 0.0;
+    double t6 = 0.0, t7 = 0.0, t8 = 0.0, t9 = 0.0, t_total = 0.0;
+    int frames = 0;
+    int pressureIters = 0;
+
+    void reset() {
+        t1 = t2 = t3 = t4 = t5 = t6 = t7 = t8 = t9 = t_total = 0.0;
+        frames = 0;
+    }
+};
+
+extern CpuTelemetry g_telemetry;
 
 constexpr int U_FIELD = 0;
 constexpr int V_FIELD = 1;

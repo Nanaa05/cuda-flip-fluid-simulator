@@ -24,6 +24,9 @@ CPU_SRC := $(CPU_DIR)/flip_fluid.cpp $(CPU_DIR)/ui.cpp $(CPU_DIR)/main.cpp
 CPU_OBJ := $(CPU_SRC:.cpp=.o)
 CPU_BIN := $(CPU_DIR)/flip
 
+CPU_OPT_OBJ := $(CPU_DIR)/flip_fluid_opt.o $(CPU_DIR)/ui_opt.o $(CPU_DIR)/main_opt.o
+CPU_OPT_BIN := $(CPU_DIR)/flip_opt
+
 CU_SRC  := $(CUD_DIR)/particle_kinematics.cu \
             $(CUD_DIR)/spatial_hash.cu \
             $(CUD_DIR)/p2g_transfer.cu \
@@ -38,14 +41,25 @@ CU_OBJ  := $(CU_SRC:.cu=.o)
 CPP_OBJ := $(CPP_SRC:.cpp=.o)
 CUD_BIN := $(CUD_DIR)/flip
 
-.PHONY: cpu cuda run-cpu run-cuda clean-cpu clean-cuda clean
+.PHONY: cpu cpu-opt cuda run-cpu run-cpu-opt run-cuda clean-cpu clean-cuda clean
 
 cpu: $(CPU_BIN)
 
 $(CPU_BIN): $(CPU_OBJ)
 	$(CXX) -o $@ $^ $(CPU_LIBS)
 
+cpu-opt: $(CPU_OPT_BIN)
+
+$(CPU_OPT_BIN): $(CPU_OPT_OBJ)
+	$(CXX) -fopenmp -o $@ $^ $(CPU_LIBS)
+
 $(CPU_DIR)/%.o: $(CPU_DIR)/%.cpp $(CPU_DIR)/flip_fluid.h $(CPU_DIR)/ui.h
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+$(CPU_DIR)/%_opt.o: $(CPU_DIR)/%.cpp $(CPU_DIR)/flip_fluid.h $(CPU_DIR)/ui.h
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+$(CPU_DIR)/flip_fluid_opt.o: $(CPU_DIR)/flip_fluid_opt.cpp $(CPU_DIR)/flip_fluid.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 cuda: $(CUD_BIN)
@@ -62,11 +76,14 @@ $(CUD_DIR)/%.o: $(CUD_DIR)/%.cpp $(CUD_DIR)/gl_render_pipeline.h
 run-cpu: cpu
 	$(CPU_BIN)
 
+run-cpu-opt: cpu-opt
+	$(CPU_OPT_BIN)
+
 run-cuda: cuda
 	$(CUD_BIN)
 
 clean-cpu:
-	rm -f $(CPU_OBJ) $(CPU_BIN)
+	rm -f $(CPU_OBJ) $(CPU_OPT_OBJ) $(CPU_BIN) $(CPU_OPT_BIN)
 
 clean-cuda:
 	rm -f $(CU_OBJ) $(CPP_OBJ) $(CUD_BIN)

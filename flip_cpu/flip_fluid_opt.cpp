@@ -1,10 +1,10 @@
-
-
 #include "flip_fluid.h"
 
 #include <algorithm>
 #include <cmath>
-
+#include <chrono>
+#include <immintrin.h>
+#include <omp.h>
 
 namespace flipcpu {
 
@@ -63,8 +63,30 @@ FlipFluid::FlipFluid(float density_, float width, float height,
 }
 
 void FlipFluid::integrateParticles(float dt, float gravity) {
-    for (int i = 0; i < numParticles; ++i) {
-        particleVelY[i] += dt * gravity;
+    int i = 0;
+    float dt_grav = dt * gravity;
+
+    __m256 v_dt = _mm256_set1_ps(dt);
+    __m256 v_dt_grav = _mm256_set1_ps(dt_grav);
+
+    #pragma omp parallel for private(i) shared(v_dt, v_dt_grav)
+    for (i = 0; i <= numParticles - 8; i += 8) {
+        __m256 py = _mm256_loadu_ps(&particlePosY[i]);
+        __m256 vy = _mm256_loadu_ps(&particleVelY[i]);
+        __m256 px = _mm256_loadu_ps(&particlePosX[i]);
+        __m256 vx = _mm256_loadu_ps(&particleVelX[i]);
+
+        vy = _mm256_add_ps(vy, v_dt_grav);
+        px = _mm256_fmadd_ps(vx, v_dt, px);
+        py = _mm256_fmadd_ps(vy, v_dt, py);
+
+        _mm256_storeu_ps(&particleVelY[i], vy);
+        _mm256_storeu_ps(&particlePosX[i], px);
+        _mm256_storeu_ps(&particlePosY[i], py);
+    }
+
+    for (; i < numParticles; ++i) {
+        particleVelY[i] += dt_grav;
         particlePosX[i] += particleVelX[i] * dt;
         particlePosY[i] += particleVelY[i] * dt;
     }
@@ -73,7 +95,6 @@ void FlipFluid::integrateParticles(float dt, float gravity) {
 void FlipFluid::pushParticlesApart(int numIters) {
     const float colorDiffusionCoeff = 0.001f;
 
-    // count particles per cell
     std::fill(numCellParticles.begin(), numCellParticles.end(), 0);
     for (int i = 0; i < numParticles; ++i) {
         int xi = clampi(int(std::floor(particlePosX[i] * pInvSpacing)), 0, pNumX - 1);
@@ -81,8 +102,6 @@ void FlipFluid::pushParticlesApart(int numIters) {
         numCellParticles[xi * pNumY + yi] += 1;
     }
 
-    // prefix sum (note: matches JS — firstCellParticle[i] holds sum thru i,
-    // then we decrement during the fill pass).
     int first = 0;
     for (int i = 0; i < pNumCells; ++i) {
         first += numCellParticles[i];
@@ -90,7 +109,6 @@ void FlipFluid::pushParticlesApart(int numIters) {
     }
     firstCellParticle[pNumCells] = first;
 
-    // fill cell -> particles
     for (int i = 0; i < numParticles; ++i) {
         int xi = clampi(int(std::floor(particlePosX[i] * pInvSpacing)), 0, pNumX - 1);
         int yi = clampi(int(std::floor(particlePosY[i] * pInvSpacing)), 0, pNumY - 1);
@@ -99,7 +117,6 @@ void FlipFluid::pushParticlesApart(int numIters) {
         cellParticleIds[firstCellParticle[cellNr]] = i;
     }
 
-    // separate
     const float minDist = 2.0f * particleRadius;
     const float minDist2 = minDist * minDist;
 
@@ -139,7 +156,6 @@ void FlipFluid::pushParticlesApart(int numIters) {
                         particlePosX[idn] += dx;
                         particlePosY[idn] += dy;
 
-                        // diffuse colours
                         float c0r = particleColorR[i],  c1r = particleColorR[idn];
                         float c0g = particleColorG[i],  c1g = particleColorG[idn];
                         float c0b = particleColorB[i],  c1b = particleColorB[idn];
@@ -153,7 +169,6 @@ void FlipFluid::pushParticlesApart(int numIters) {
                         particleColorB[i]   = c0b + (cb - c0b) * colorDiffusionCoeff;
                         particleColorB[idn] = c1b + (cb - c1b) * colorDiffusionCoeff;
 
-                        // refresh cached px/py for next neighbour
                         px = particlePosX[i];
                         py = particlePosY[i];
                     }
@@ -177,10 +192,59 @@ void FlipFluid::handleParticleCollisions(float obstacleX, float obstacleY,
     float minY = hh + r;
     float maxY = (fNumY - 1) * hh - r;
 
-    for (int i = 0; i < numParticles; ++i) {
+    __m256 v_obsX = _mm256_set1_ps(obstacleX);
+    __m256 v_obsY = _mm256_set1_ps(obstacleY);
+    __m256 v_minDist2 = _mm256_set1_ps(minDist2);
+    __m256 v_obsVelX = _mm256_set1_ps(obstacleVelX);
+    __m256 v_obsVelY = _mm256_set1_ps(obstacleVelY);
+
+    __m256 v_minX = _mm256_set1_ps(minX);
+    __m256 v_maxX = _mm256_set1_ps(maxX);
+    __m256 v_minY = _mm256_set1_ps(minY);
+    __m256 v_maxY = _mm256_set1_ps(maxY);
+    __m256 v_zero = _mm256_setzero_ps();
+
+    int i = 0;
+    #pragma omp parallel for private(i) shared(v_obsX, v_obsY, v_minDist2, v_obsVelX, v_obsVelY, v_minX, v_maxX, v_minY, v_maxY, v_zero)
+    for (i = 0; i <= numParticles - 8; i += 8) {
+        __m256 px = _mm256_loadu_ps(&particlePosX[i]);
+        __m256 py = _mm256_loadu_ps(&particlePosY[i]);
+        __m256 vx = _mm256_loadu_ps(&particleVelX[i]);
+        __m256 vy = _mm256_loadu_ps(&particleVelY[i]);
+
+        __m256 dx = _mm256_sub_ps(px, v_obsX);
+        __m256 dy = _mm256_sub_ps(py, v_obsY);
+        __m256 d2 = _mm256_fmadd_ps(dx, dx, _mm256_mul_ps(dy, dy));
+        __m256 mask_obs = _mm256_cmp_ps(d2, v_minDist2, _CMP_LT_OS);
+
+        vx = _mm256_blendv_ps(vx, v_obsVelX, mask_obs);
+        vy = _mm256_blendv_ps(vy, v_obsVelY, mask_obs);
+
+        __m256 mask_minX = _mm256_cmp_ps(px, v_minX, _CMP_LT_OS);
+        px = _mm256_blendv_ps(px, v_minX, mask_minX);
+        vx = _mm256_blendv_ps(vx, v_zero, mask_minX);
+
+        __m256 mask_maxX = _mm256_cmp_ps(px, v_maxX, _CMP_GT_OS);
+        px = _mm256_blendv_ps(px, v_maxX, mask_maxX);
+        vx = _mm256_blendv_ps(vx, v_zero, mask_maxX);
+
+        __m256 mask_minY = _mm256_cmp_ps(py, v_minY, _CMP_LT_OS);
+        py = _mm256_blendv_ps(py, v_minY, mask_minY);
+        vy = _mm256_blendv_ps(vy, v_zero, mask_minY);
+
+        __m256 mask_maxY = _mm256_cmp_ps(py, v_maxY, _CMP_GT_OS);
+        py = _mm256_blendv_ps(py, v_maxY, mask_maxY);
+        vy = _mm256_blendv_ps(vy, v_zero, mask_maxY);
+
+        _mm256_storeu_ps(&particlePosX[i], px);
+        _mm256_storeu_ps(&particlePosY[i], py);
+        _mm256_storeu_ps(&particleVelX[i], vx);
+        _mm256_storeu_ps(&particleVelY[i], vy);
+    }
+
+    for (; i < numParticles; ++i) {
         float x = particlePosX[i];
         float y = particlePosY[i];
-
         float dx = x - obstacleX;
         float dy = y - obstacleY;
         float d2 = dx * dx + dy * dy;
@@ -421,7 +485,6 @@ void FlipFluid::transferVelocities(bool toGrid, float flipRatio) {
 void FlipFluid::solveIncompressibility(int numIters, float dt,
                                        float overRelaxation, bool compensateDrift)
 {
-    // zero pressure, save prev velocities
     for (int i = 0; i < fNumCells; ++i) {
         p[i] = 0.0f;
         prevU[i] = u[i];
@@ -434,42 +497,55 @@ void FlipFluid::solveIncompressibility(int numIters, float dt,
     int   cd = compensateDrift ? 1 : 0;
 
     for (int iter = 0; iter < numIters; ++iter) {
-        // Gauss-Seidel sweep matching the JS ordering exactly: i in [1, fNumX-1),
-        // j in [1, fNumY-1).
+        #pragma omp parallel for collapse(2) schedule(static)
         for (int i = 1; i < fNumX - 1; ++i) {
             for (int j = 1; j < fNumY - 1; ++j) {
-                if (cellType[i * n + j] != FLUID_CELL) continue;
+                if ((i + j) % 2 != 0 || cellType[i * n + j] != FLUID_CELL) continue;
 
                 int center = i * n + j;
-                int left   = (i - 1) * n + j;
-                int right  = (i + 1) * n + j;
-                int bottom = i * n + j - 1;
-                int top    = i * n + j + 1;
-
-                float sx0 = s[left];
-                float sx1 = s[right];
-                float sy0 = s[bottom];
-                float sy1 = s[top];
-                float sSum = sx0 + sx1 + sy0 + sy1;
+                float sSum = s[std::max(i - 1, 0) * n + j] + s[std::min(i + 1, fNumX - 1) * n + j] + 
+                             s[i * n + std::max(j - 1, 0)] + s[i * n + std::min(j + 1, fNumY - 1)];
                 if (sSum == 0.0f) continue;
 
-                float div = u[right] - u[center] + v[top] - v[center];
-
+                float div = u[(i + 1) * n + j] - u[center] + v[i * n + j + 1] - v[center];
                 if (rest > 0.0f && cd != 0) {
-                    float k = 1.0f;
                     float compression = particleDensity[center] - rest;
-                    if (compression > 0.0f)
-                        div = div - k * compression;
+                    if (compression > 0.0f) div -= compression;
                 }
 
-                float pVal = -div / sSum;
-                pVal *= overRelaxation;
+                float pVal = (-div / sSum) * overRelaxation;
                 p[center] += cp * pVal;
 
-                u[center] -= sx0 * pVal;
-                u[right]  += sx1 * pVal;
-                v[center] -= sy0 * pVal;
-                v[top]    += sy1 * pVal;
+                u[center] -= s[std::max(i - 1, 0) * n + j] * pVal;
+                u[(i + 1) * n + j]  += s[std::min(i + 1, fNumX - 1) * n + j] * pVal;
+                v[center] -= s[i * n + std::max(j - 1, 0)] * pVal;
+                v[i * n + j + 1]    += s[i * n + std::min(j + 1, fNumY - 1)] * pVal;
+            }
+        }
+
+        #pragma omp parallel for collapse(2) schedule(static)
+        for (int i = 1; i < fNumX - 1; ++i) {
+            for (int j = 1; j < fNumY - 1; ++j) {
+                if ((i + j) % 2 == 0 || cellType[i * n + j] != FLUID_CELL) continue;
+
+                int center = i * n + j;
+                float sSum = s[std::max(i - 1, 0) * n + j] + s[std::min(i + 1, fNumX - 1) * n + j] + 
+                             s[i * n + std::max(j - 1, 0)] + s[i * n + std::min(j + 1, fNumY - 1)];
+                if (sSum == 0.0f) continue;
+
+                float div = u[(i + 1) * n + j] - u[center] + v[i * n + j + 1] - v[center];
+                if (rest > 0.0f && cd != 0) {
+                    float compression = particleDensity[center] - rest;
+                    if (compression > 0.0f) div -= compression;
+                }
+
+                float pVal = (-div / sSum) * overRelaxation;
+                p[center] += cp * pVal;
+
+                u[center] -= s[std::max(i - 1, 0) * n + j] * pVal;
+                u[(i + 1) * n + j]  += s[std::min(i + 1, fNumX - 1) * n + j] * pVal;
+                v[center] -= s[i * n + std::max(j - 1, 0)] * pVal;
+                v[i * n + j + 1]    += s[i * n + std::min(j + 1, fNumY - 1)] * pVal;
             }
         }
     }
@@ -479,8 +555,10 @@ void FlipFluid::updateParticleColors() {
     const float sStep = 0.01f;
     float d0 = particleRestDensity;
     float h1 = fInvSpacing;
+    int i = 0;
 
-    for (int i = 0; i < numParticles; ++i) {
+    #pragma omp parallel for private(i) shared(d0, h1)
+    for (i = 0; i < numParticles; ++i) {
         particleColorR[i] = clampf(particleColorR[i] - sStep, 0.0f, 1.0f);
         particleColorG[i] = clampf(particleColorG[i] - sStep, 0.0f, 1.0f);
         particleColorB[i] = clampf(particleColorB[i] + sStep, 0.0f, 1.0f);

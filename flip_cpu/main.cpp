@@ -333,6 +333,7 @@ int main(int argc, char** argv) {
     bool gravityOn = (scene.gravity != 0.0f);
 
     while (w.running) {
+        auto t_frame_start = std::chrono::steady_clock::now();
         mousePressedEdge = false;
         mouseReleasedEdge = false;
 
@@ -428,6 +429,9 @@ int main(int argc, char** argv) {
         }
 
         // ----- draw sim -----
+	// T9 START: Proses Frame Render
+        auto t_render_start = std::chrono::steady_clock::now();
+	
         glClear(GL_COLOR_BUFFER_BIT);
         setProjection(w.width, w.height);
 
@@ -480,6 +484,28 @@ int main(int argc, char** argv) {
 
         glXSwapBuffers(w.dpy, w.xwin);
 
+	// T9 STOP
+        g_telemetry.t9 += std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t_render_start).count();
+
+        // T_total STOP
+        g_telemetry.t_total += std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t_frame_start).count();
+
+	if (!scene.paused) {
+            g_telemetry.frames++;
+            if (g_telemetry.frames >= 60) {
+                double N = 60.0;
+                std::printf("[CPU] frame=%ld res=%d T1=%.3fms T2=%.3fms T3=%.3fms T4=%.3fms T5=%.3fms T6=%.3fms T7=%.3fms T8=%.3fms T9=%.3fms T10=0.000ms T_total=%.3fms particles=%d iters=%d\n",
+                    scene.frameNr, scene.resolution,
+                    g_telemetry.t1 / N, g_telemetry.t2 / N, g_telemetry.t3 / N,
+                    g_telemetry.t4 / N, g_telemetry.t5 / N, g_telemetry.t6 / N,
+                    g_telemetry.t7 / N, g_telemetry.t8 / N, g_telemetry.t9 / N,
+                    g_telemetry.t_total / N, f.numParticles, g_telemetry.pressureIters);
+                
+                std::fflush(stdout);
+                g_telemetry.reset();
+            }
+        }
+
         // ----- fps -----
         fpsFrames += 1;
         auto now = std::chrono::steady_clock::now();
@@ -487,8 +513,6 @@ int main(int argc, char** argv) {
         if (elapsed >= 0.5) {
             lastFps = fpsFrames / elapsed;
             std::snprintf(fpsStr, sizeof(fpsStr), "%.1f", lastFps);
-            std::printf("[flip-cpp] %s FPS  particles=%d frame=%ld\n",
-                        fpsStr, f.numParticles, scene.frameNr);
             std::fflush(stdout);
             fpsT0 = now;
             fpsFrames = 0;
