@@ -1,6 +1,6 @@
 # Usage:
 #   make cpu        build flip_cpu/flip
-#   make cuda       build flip_cuda/flip_cuda
+#   make cuda       build flip_cuda/flip
 #   make run-cpu
 #   make run-cuda
 #   make clean-cpu / clean-cuda / clean
@@ -36,7 +36,7 @@ CU_SRC  := $(CUD_DIR)/particle_kinematics.cu \
 CPP_SRC := $(CUD_DIR)/gl_render_pipeline.cpp
 CU_OBJ  := $(CU_SRC:.cu=.o)
 CPP_OBJ := $(CPP_SRC:.cpp=.o)
-CUD_BIN := $(CUD_DIR)/flip_cuda
+CUD_BIN := $(CUD_DIR)/flip
 
 .PHONY: cpu cuda run-cpu run-cuda clean-cpu clean-cuda clean
 
