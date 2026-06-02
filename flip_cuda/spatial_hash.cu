@@ -62,8 +62,11 @@ __global__ void separate_kernel(
     float minDist2 = minDist * minDist;
     const float colorDiffusion = 0.001f;
 
-    float dxAccum = 0.0f;
-    float dyAccum = 0.0f;
+    float dispX = 0.0f;
+    float dispY = 0.0f;
+    float cr = colorR[i];
+    float cg = colorG[i];
+    float cb = colorB[i];
 
     for (int xi = x0; xi <= x1; ++xi) {
         for (int yi = y0; yi <= y1; ++yi) {
@@ -75,38 +78,29 @@ __global__ void separate_kernel(
                 if (idn == i) continue;
                 float qx = posX[idn];
                 float qy = posY[idn];
-                float dx = qx - (px - dxAccum);
-                float dy = qy - (py - dyAccum);
+                float dx = px - qx;
+                float dy = py - qy;
                 float d2 = dx * dx + dy * dy;
                 if (d2 > minDist2 || d2 == 0.0f) continue;
                 float dist = sqrtf(d2);
                 float sFac = 0.5f * (minDist - dist) / dist;
-                dx *= sFac;
-                dy *= sFac;
-                dxAccum += dx;
-                dyAccum += dy;
-                atomicAdd(&posX[idn], dx);
-                atomicAdd(&posY[idn], dy);
-                float c0r = colorR[i], c1r = colorR[idn];
-                float c0g = colorG[i], c1g = colorG[idn];
-                float c0b = colorB[i], c1b = colorB[idn];
-                float cr = (c0r + c1r) * 0.5f;
-                float cg = (c0g + c1g) * 0.5f;
-                float cb = (c0b + c1b) * 0.5f;
-                colorR[i]   = c0r + (cr - c0r) * colorDiffusion;
-                colorR[idn] = c1r + (cr - c1r) * colorDiffusion;
-                colorG[i]   = c0g + (cg - c0g) * colorDiffusion;
-                colorG[idn] = c1g + (cg - c1g) * colorDiffusion;
-                colorB[i]   = c0b + (cb - c0b) * colorDiffusion;
-                colorB[idn] = c1b + (cb - c1b) * colorDiffusion;
+                dispX += dx * sFac;
+                dispY += dy * sFac;
+                float mr = (cr + colorR[idn]) * 0.5f;
+                float mg = (cg + colorG[idn]) * 0.5f;
+                float mb = (cb + colorB[idn]) * 0.5f;
+                cr += (mr - cr) * colorDiffusion;
+                cg += (mg - cg) * colorDiffusion;
+                cb += (mb - cb) * colorDiffusion;
             }
         }
     }
 
-    if (dxAccum != 0.0f || dyAccum != 0.0f) {
-        atomicAdd(&posX[i], -dxAccum);
-        atomicAdd(&posY[i], -dyAccum);
-    }
+    posX[i] = px + dispX;
+    posY[i] = py + dispY;
+    colorR[i] = cr;
+    colorG[i] = cg;
+    colorB[i] = cb;
 }
 
 // === launchPushParticlesApart: rebuild spatial hash each iter, run separate_kernel ===
