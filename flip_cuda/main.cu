@@ -105,7 +105,8 @@ static void createWindow() {
     Colormap cmap = XCreateColormap(w.dpy, RootWindow(w.dpy, vi->screen), vi->visual, AllocNone);
     XSetWindowAttributes swa;
     swa.colormap = cmap;
-    swa.event_mask = ExposureMask | KeyPressMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask;
+    swa.event_mask = ExposureMask | KeyPressMask | ButtonPressMask | ButtonReleaseMask |
+                     PointerMotionMask | StructureNotifyMask;
 
     w.xwin = XCreateWindow(w.dpy, RootWindow(w.dpy, vi->screen), 0, 0,
                            w.width, w.height, 0, vi->depth, InputOutput,
@@ -283,7 +284,10 @@ int main(int argc, char** argv) {
         while (XPending(w.dpy)) {
             XEvent e;
             XNextEvent(w.dpy, &e);
-            if (e.type == KeyPress) {
+            if (e.type == ConfigureNotify) {
+                w.width = e.xconfigure.width;
+                w.height = e.xconfigure.height;
+            } else if (e.type == KeyPress) {
                 KeySym ks = XLookupKeysym(&e.xkey, 0);
                 if (ks == XK_Escape || ks == XK_q) w.running = false;
                 else if (ks == XK_space || ks == XK_p) scene.paused = !scene.paused;
@@ -386,6 +390,7 @@ int main(int argc, char** argv) {
 
         // T9: render
         cudaEventRecord(evRenderStart, 0);
+        glViewport(0, 0, w.width, w.height);
         glClear(GL_COLOR_BUFFER_BIT);
 
         if (scene.showGrid) {
