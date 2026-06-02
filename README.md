@@ -54,6 +54,20 @@ make validate
 
 `--lockstep` re-syncs GPU to the CPU state every frame so each frame measures one step from an identical start. Output shows per-frame **avg** and **worst** particle error (raw + % of cell size). A steady avg of a few percent of one cell = CPU and GPU agree.
 
+Available flags:
+
+| Flag | Description |
+|------|-------------|
+| `--lockstep` | fair per-frame comparison (re-syncs GPU to CPU each frame) |
+| `--iters 500` | override pressure iterations, more = better converged, smaller error |
+| `--no-gravity` | disable gravity, isolates horizontal fluid behavior |
+| `--no-obstacle` | disable obstacle, isolates pure fluid physics |
+| `--no-separate` | disable push-apart, isolates P2G/G2P only |
+| `--res N` | grid resolution (default 100) |
+| `--frames N` | number of frames to compare (default 120) |
+
+Only the baseline `--lockstep` result is saved to `validation_results.log`. All other variants print to terminal only.
+
 ## Project Structure
 
 ```
