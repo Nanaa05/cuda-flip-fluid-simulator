@@ -2,13 +2,20 @@
 #include "device_data.cuh"
 #include "gl_render_pipeline.h"
 #include <cuda_gl_interop.h>
+#include <cstdio>
+#include <cstdlib>
 
 // === interopInit: register particleVBO and colorVBO with CUDA ===
 void interopInit(DeviceData& d, const RenderPipeline& rp) {
-    cudaGraphicsGLRegisterBuffer(&d.vbo_pos_resource, rp.particleVBO,
-                                 cudaGraphicsRegisterFlagsNone);
-    cudaGraphicsGLRegisterBuffer(&d.vbo_col_resource, rp.colorVBO,
-                                 cudaGraphicsRegisterFlagsNone);
+    cudaError_t e1 = cudaGraphicsGLRegisterBuffer(&d.vbo_pos_resource, rp.particleVBO,
+                                                   cudaGraphicsRegisterFlagsNone);
+    cudaError_t e2 = cudaGraphicsGLRegisterBuffer(&d.vbo_col_resource, rp.colorVBO,
+                                                   cudaGraphicsRegisterFlagsNone);
+    if (e1 != cudaSuccess || e2 != cudaSuccess) {
+        std::fprintf(stderr, "[interopInit] cudaGraphicsGLRegisterBuffer failed: %s | %s\n",
+                     cudaGetErrorString(e1), cudaGetErrorString(e2));
+        std::exit(1);
+    }
 }
 
 // === interopMapResources: map VBOs, set posX/Y and colorR/G/B device pointers ===

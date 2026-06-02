@@ -33,6 +33,9 @@ struct DeviceData {
     float* d_restDensity = nullptr;
     float* d_partialSums = nullptr;
 
+    float* sepPosX = nullptr;
+    float* sepPosY = nullptr;
+
     cudaGraphicsResource_t vbo_pos_resource = nullptr;
     cudaGraphicsResource_t vbo_col_resource = nullptr;
 
