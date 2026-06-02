@@ -90,6 +90,30 @@ float g_h = 0.0f;
 float g_particleRadius = 0.0f;
 int g_fNumCells = 0;
 
+static bool g_noInterop = false;
+static float* g_rawPosX = nullptr;
+static float* g_rawPosY = nullptr;
+static float* g_rawColorR = nullptr;
+static float* g_rawColorG = nullptr;
+static float* g_rawColorB = nullptr;
+
+static void allocRawBuffers(int n) {
+    cudaMalloc(&g_rawPosX,   n * sizeof(float));
+    cudaMalloc(&g_rawPosY,   n * sizeof(float));
+    cudaMalloc(&g_rawColorR, n * sizeof(float));
+    cudaMalloc(&g_rawColorG, n * sizeof(float));
+    cudaMalloc(&g_rawColorB, n * sizeof(float));
+}
+
+static void freeRawBuffers() {
+    if (g_rawPosX)   cudaFree(g_rawPosX);
+    if (g_rawPosY)   cudaFree(g_rawPosY);
+    if (g_rawColorR) cudaFree(g_rawColorR);
+    if (g_rawColorG) cudaFree(g_rawColorG);
+    if (g_rawColorB) cudaFree(g_rawColorB);
+    g_rawPosX = g_rawPosY = g_rawColorR = g_rawColorG = g_rawColorB = nullptr;
+}
+
 static int s_glxAttrs[] = { GLX_RGBA, GLX_DOUBLEBUFFER, GLX_DEPTH_SIZE, 24, None };
 
 static void createWindow() {
@@ -194,8 +218,26 @@ static void setupScene() {
 
     d.allocate(g_fNumCells, pNumCells, maxParticles);
     renderInit(rp, maxParticles, g_fNumCells, g_fNumX, g_fNumY, g_h);
-    interopInit(d, rp);
-    launchDeviceDataReset(d, h_posX.data(), h_posY.data(), h_s.data(), g_numParticles, g_fNumCells);
+
+    if (g_noInterop) {
+        allocRawBuffers(maxParticles);
+        d.posX   = g_rawPosX;   d.posY   = g_rawPosY;
+        d.colorR = g_rawColorR; d.colorG = g_rawColorG; d.colorB = g_rawColorB;
+        cudaMemcpy(d.posX, h_posX.data(), g_numParticles * sizeof(float), cudaMemcpyHostToDevice);
+        cudaMemcpy(d.posY, h_posY.data(), g_numParticles * sizeof(float), cudaMemcpyHostToDevice);
+        cudaMemset(d.colorR, 0, maxParticles * sizeof(float));
+        cudaMemset(d.colorG, 0, maxParticles * sizeof(float));
+        { std::vector<float> blue(g_numParticles, 1.0f); cudaMemcpy(d.colorB, blue.data(), g_numParticles * sizeof(float), cudaMemcpyHostToDevice); }
+        cudaMemcpy(d.s, h_s.data(), g_fNumCells * sizeof(float), cudaMemcpyHostToDevice);
+        cudaMemset(d.velX, 0, maxParticles * sizeof(float));
+        cudaMemset(d.velY, 0, maxParticles * sizeof(float));
+        cudaMemset(d.u, 0, g_fNumCells * sizeof(float));
+        cudaMemset(d.v, 0, g_fNumCells * sizeof(float));
+        cudaMemset(d.p, 0, g_fNumCells * sizeof(float));
+    } else {
+        interopInit(d, rp);
+        launchDeviceDataReset(d, h_posX.data(), h_posY.data(), h_s.data(), g_numParticles, g_fNumCells);
+    }
     
     // Deterministic Obstacle Setup
     scene.obstacleX = 3.0f;
@@ -204,7 +246,12 @@ static void setupScene() {
 }
 
 static void cleanUp() {
-    interopDestroy(d);
+    if (g_noInterop) {
+        d.posX = d.posY = d.colorR = d.colorG = d.colorB = nullptr;
+        freeRawBuffers();
+    } else {
+        interopDestroy(d);
+    }
     renderDestroy(rp);
     d.free();
     if (w.glc) { glXMakeCurrent(w.dpy, None, nullptr); glXDestroyContext(w.dpy, w.glc); }
@@ -220,6 +267,8 @@ int main(int argc, char** argv) {
         if (std::strcmp(argv[i], "--benchmark") == 0 && i + 1 < argc) {
             isBenchmark = true;
             benchmarkRes = std::atoi(argv[++i]);
+        } else if (std::strcmp(argv[i], "--no-interop") == 0) {
+            g_noInterop = true;
         }
     }
 
@@ -334,9 +383,11 @@ int main(int argc, char** argv) {
                 telemetry.reset();
             }
 
-            cudaEventRecord(evMapStart, 0);
-            interopMapResources(d);
-            cudaEventRecord(evMapStop, 0);
+            if (!g_noInterop) {
+                cudaEventRecord(evMapStart, 0);
+                interopMapResources(d);
+                cudaEventRecord(evMapStop, 0);
+            }
 
             gpuSimulate(d, g_numParticles, scene.dt, scene.gravity, scene.flipRatio,
                         scene.numPressureIters, scene.numParticleIters, scene.overRelaxation,
@@ -344,22 +395,25 @@ int main(int argc, char** argv) {
                         scene.obstacleX, scene.obstacleY, scene.obstacleRadius,
                         scene.obstacleVelX, scene.obstacleVelY, scene.numSubSteps);
 
-
             gpuUpdateColors(d, g_numParticles);
 
-            cudaMemcpy(h_posX.data(), d.posX, g_numParticles * sizeof(float), cudaMemcpyDeviceToHost);
-            cudaMemcpy(h_posY.data(), d.posY, g_numParticles * sizeof(float), cudaMemcpyDeviceToHost);
+            cudaEventRecord(evUnmapStart, 0);
+            cudaMemcpy(h_posX.data(),   d.posX,   g_numParticles * sizeof(float), cudaMemcpyDeviceToHost);
+            cudaMemcpy(h_posY.data(),   d.posY,   g_numParticles * sizeof(float), cudaMemcpyDeviceToHost);
             cudaMemcpy(h_colorR.data(), d.colorR, g_numParticles * sizeof(float), cudaMemcpyDeviceToHost);
             cudaMemcpy(h_colorG.data(), d.colorG, g_numParticles * sizeof(float), cudaMemcpyDeviceToHost);
             cudaMemcpy(h_colorB.data(), d.colorB, g_numParticles * sizeof(float), cudaMemcpyDeviceToHost);
-
-            cudaEventRecord(evUnmapStart, 0);
-            interopUnmapResources(d);
             cudaEventRecord(evUnmapStop, 0);
+
+            if (!g_noInterop) {
+                interopUnmapResources(d);
+            }
             cudaEventSynchronize(evUnmapStop);
 
             float mapMs = 0.0f, unmapMs = 0.0f;
-            cudaEventElapsedTime(&mapMs, evMapStart, evMapStop);
+            if (!g_noInterop) {
+                cudaEventElapsedTime(&mapMs, evMapStart, evMapStop);
+            }
             cudaEventElapsedTime(&unmapMs, evUnmapStart, evUnmapStop);
             t10Ms = mapMs + unmapMs;
         }
@@ -425,7 +479,9 @@ int main(int argc, char** argv) {
             if (isBenchmark) {
                 if (scene.frameNr == 660) {
                     float N = 600.0f;
-                    std::printf("[BENCHMARK_CUDA_RESULT] res=%d T1=%.3fms T2=%.3fms T3=%.3fms T4=%.3fms T5=%.3fms T6=%.3fms T7=%.3fms T8=%.3fms T9=%.3fms T10=%.3fms T_total=%.3fms particles=%d\n",
+                    const char* label = g_noInterop ? "[BENCHMARK_CUDA_NOINTEROP_RESULT]" : "[BENCHMARK_CUDA_RESULT]";
+                    std::printf("%s res=%d T1=%.3fms T2=%.3fms T3=%.3fms T4=%.3fms T5=%.3fms T6=%.3fms T7=%.3fms T8=%.3fms T9=%.3fms T10=%.3fms T_total=%.3fms particles=%d\n",
+                                label,
                                 scene.resolution, g_gpu_telemetry.t1 / N, g_gpu_telemetry.t2 / N, g_gpu_telemetry.t3 / N, 
                                 g_gpu_telemetry.t4 / N, g_gpu_telemetry.t5 / N, g_gpu_telemetry.t6 / N, g_gpu_telemetry.t7 / N, 
                                 g_gpu_telemetry.t8 / N, telemetry.t9 / N, telemetry.t10 / N, telemetry.t_total / N, g_numParticles);

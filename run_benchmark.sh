@@ -45,9 +45,12 @@ log_echo "===================================================================="
 for resolution in 50 100 150 200; do
     log_echo "[PROSES] Menguji Versi CPU - Resolusi Grid $resolution..."
     ./flip_cpu/flip --no-vsync --benchmark $resolution 2>&1 | tee -a "$LOG_FILE"
-    
-    log_echo "[PROSES] Menguji Versi CUDA - Resolusi Grid $resolution..."
+
+    log_echo "[PROSES] Menguji Versi CUDA (dengan interop) - Resolusi Grid $resolution..."
     ./flip_cuda/flip --benchmark $resolution 2>&1 | tee -a "$LOG_FILE"
+
+    log_echo "[PROSES] Menguji Versi CUDA (tanpa interop) - Resolusi Grid $resolution..."
+    ./flip_cuda/flip --benchmark $resolution --no-interop 2>&1 | tee -a "$LOG_FILE"
     log_echo "--------------------------------------------------------------------"
 done
 
