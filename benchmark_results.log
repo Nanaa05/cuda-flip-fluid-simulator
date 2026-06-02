@@ -1,0 +1,144 @@
+====================================================================
+   LOG EKSPERIMEN BENCHMARK FLIP SIMULATOR - 2026-06-02 22:38:45
+====================================================================
+====================================================================
+                   MENGUMPULKAN DATA SPESIFIKASI                    
+====================================================================
+Architecture:                            x86_64
+CPU op-mode(s):                          32-bit, 64-bit
+Address sizes:                           48 bits physical, 48 bits virtual
+Byte Order:                              Little Endian
+CPU(s):                                  12
+On-line CPU(s) list:                     0-11
+Vendor ID:                               AuthenticAMD
+Model name:                              AMD Ryzen 5 5600H with Radeon Graphics
+CPU family:                              25
+Model:                                   80
+Thread(s) per core:                      2
+Core(s) per socket:                      6
+Socket(s):                               1
+Stepping:                                0
+Microcode version:                       0xa500012
+Frequency boost:                         enabled
+CPU(s) scaling MHz:                      53%
+CPU max MHz:                             4280.9849
+CPU min MHz:                             412.6250
+BogoMIPS:                                6587.45
+Flags:                                   fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba ibrs ibpb stibp vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk clzero irperf xsaveerptr rdpru wbnoinvd cppc arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif v_spec_ctrl umip pku ospke vaes vpclmulqdq rdpid overflow_recov succor smca fsrm debug_swap
+Virtualization:                          AMD-V
+L1d cache:                               192 KiB (6 instances)
+L1i cache:                               192 KiB (6 instances)
+L2 cache:                                3 MiB (6 instances)
+L3 cache:                                16 MiB (1 instance)
+NUMA node(s):                            1
+NUMA node0 CPU(s):                       0-11
+Vulnerability Gather data sampling:      Not affected
+Vulnerability Ghostwrite:                Not affected
+Vulnerability Indirect target selection: Not affected
+Vulnerability Itlb multihit:             Not affected
+Vulnerability L1tf:                      Not affected
+Vulnerability Mds:                       Not affected
+Vulnerability Meltdown:                  Not affected
+Vulnerability Mmio stale data:           Not affected
+Vulnerability Old microcode:             Not affected
+Vulnerability Reg file data sampling:    Not affected
+Vulnerability Retbleed:                  Not affected
+Vulnerability Spec rstack overflow:      Mitigation; Safe RET
+Vulnerability Spec store bypass:         Mitigation; Speculative Store Bypass disabled via prctl
+Vulnerability Spectre v1:                Mitigation; usercopy/swapgs barriers and __user pointer sanitization
+Vulnerability Spectre v2:                Mitigation; Retpolines; IBPB conditional; IBRS_FW; STIBP always-on; RSB filling; PBRSB-eIBRS Not affected; BHI Not affected
+Vulnerability Srbds:                     Not affected
+Vulnerability Tsa:                       Mitigation; Clear CPU buffers
+Vulnerability Tsx async abort:           Not affected
+Vulnerability Vmscape:                   Mitigation; IBPB before exit to userspace
+
+               total        used        free      shared  buff/cache   available
+Mem:            15Gi       1.3Gi        13Gi       8.4Mi       609Mi        13Gi
+Swap:           19Gi          0B        19Gi
+Comm:           27Gi       3.0Gi        24Gi
+
+ANSI_COLOR="0;38;2;126;186;228"
+BUG_REPORT_URL="https://github.com/NixOS/nixpkgs/issues"
+BUILD_ID="26.05.20260523.64c08a7"
+CPE_NAME="cpe:/o:nixos:nixos:26.05"
+DEFAULT_HOSTNAME=nixos
+DOCUMENTATION_URL="https://nixos.org/learn.html"
+HOME_URL="https://nixos.org/"
+ID=nixos
+ID_LIKE=""
+IMAGE_ID=""
+IMAGE_VERSION=""
+LOGO="nix-snowflake"
+NAME=NixOS
+PRETTY_NAME="NixOS 26.05 (Yarara)"
+SUPPORT_URL="https://nixos.org/community.html"
+VARIANT=""
+VARIANT_ID=""
+VENDOR_NAME=NixOS
+VENDOR_URL="https://nixos.org/"
+VERSION="26.05 (Yarara)"
+VERSION_CODENAME=yarara
+VERSION_ID="26.05"
+
+Tue Jun  2 22:38:47 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 595.71.05              Driver Version: 595.71.05      CUDA Version: 13.2     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 3050 ...    Off |   00000000:01:00.0 Off |                  N/A |
+| N/A   48C    P0            749W /   35W |      14MiB /   4096MiB |      9%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A            1607      G   ...wqy-xorg-server-21.1.22/bin/X          4MiB |
++-----------------------------------------------------------------------------------------+
+
+compute_cap
+8.6
+
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2025 NVIDIA Corporation
+Built on Tue_May_27_02:21:03_PDT_2025
+Cuda compilation tools, release 12.9, V12.9.86
+Build cuda_12.9.r12.9/compiler.36037853_0
+--------------------------------------------------------------------
+Membangun ulang biner simulasi...
+====================================================================
+                MEMULAI PENGUJIAN OTOMATIS (50-200)                 
+====================================================================
+[PROSES] Menguji Versi CPU - Resolusi Grid 50...
+[flip-cpp] starting (CPU sim, GPU render)
+[BENCHMARK_CPU_RESULT] res=50 T1=0.001ms T2=0.821ms T3=0.009ms T4=0.088ms T5=0.015ms T6=0.714ms T7=0.061ms T8=0.024ms T9=0.216ms T10=0.000ms T_total=1.951ms particles=4189
+[PROSES] Menguji Versi CUDA - Resolusi Grid 50...
+[BENCHMARK_CUDA_RESULT] res=50 T1=0.005ms T2=0.065ms T3=0.004ms T4=0.026ms T5=0.008ms T6=0.342ms T7=0.007ms T8=0.006ms T9=1.235ms T10=0.379ms T_total=2.945ms particles=4189
+--------------------------------------------------------------------
+[PROSES] Menguji Versi CPU - Resolusi Grid 100...
+[flip-cpp] starting (CPU sim, GPU render)
+[BENCHMARK_CPU_RESULT] res=100 T1=0.005ms T2=4.105ms T3=0.034ms T4=0.371ms T5=0.067ms T6=3.009ms T7=0.268ms T8=0.101ms T9=0.381ms T10=0.000ms T_total=8.342ms particles=18352
+[PROSES] Menguji Versi CUDA - Resolusi Grid 100...
+[BENCHMARK_CUDA_RESULT] res=100 T1=0.007ms T2=0.119ms T3=0.004ms T4=0.049ms T5=0.016ms T6=0.498ms T7=0.011ms T8=0.008ms T9=1.298ms T10=0.384ms T_total=3.449ms particles=18352
+--------------------------------------------------------------------
+[PROSES] Menguji Versi CPU - Resolusi Grid 150...
+[flip-cpp] starting (CPU sim, GPU render)
+[BENCHMARK_CPU_RESULT] res=150 T1=0.036ms T2=29.826ms T3=0.229ms T4=2.538ms T5=0.456ms T6=30.605ms T7=1.824ms T8=0.229ms T9=0.731ms T10=0.000ms T_total=66.477ms particles=42300
+[PROSES] Menguji Versi CUDA - Resolusi Grid 150...
+[BENCHMARK_CUDA_RESULT] res=150 T1=0.024ms T2=0.686ms T3=0.029ms T4=0.284ms T5=0.076ms T6=3.772ms T7=0.081ms T8=0.016ms T9=1.546ms T10=0.387ms T_total=8.210ms particles=42300
+--------------------------------------------------------------------
+[PROSES] Menguji Versi CPU - Resolusi Grid 200...
+[flip-cpp] starting (CPU sim, GPU render)
+[BENCHMARK_CPU_RESULT] res=200 T1=0.087ms T2=73.622ms T3=0.539ms T4=6.363ms T5=1.103ms T6=98.327ms T7=4.661ms T8=0.411ms T9=1.141ms T10=0.000ms T_total=186.257ms particles=76104
+[PROSES] Menguji Versi CUDA - Resolusi Grid 200...
+[BENCHMARK_CUDA_RESULT] res=200 T1=0.051ms T2=1.636ms T3=0.065ms T4=0.623ms T5=0.143ms T6=10.241ms T7=0.153ms T8=0.027ms T9=1.845ms T10=0.392ms T_total=16.789ms particles=76104
+--------------------------------------------------------------------
+====================================================================
+               SELURUH MATRIKS PENGUJIAN SELESAI                    
+====================================================================
+[INFO] Seluruh hasil di atas telah disimpan dengan aman di file: benchmark_results.log
