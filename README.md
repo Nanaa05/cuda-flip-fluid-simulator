@@ -11,27 +11,30 @@ FLIP fluid simulator ported from CPU (C++17) to GPU (CUDA). Both versions run si
 ## Build & Run
 
 ```bash
-make cpu        # build flip_cpu/flip
-make cuda       # build flip_cuda/flip_cuda
-make run-cpu    # build + run CPU
-make run-cuda   # build + run CUDA
-make clean      # clean both
+make cpu
+make cuda
+make run-cpu
+make run-cuda
+make clean
 ```
 
 GPU arch defaults to `native` (auto-detect). Override only if needed:
 
 ```bash
-make cuda SM=sm_86   # RTX 30xx
-make cuda SM=sm_89   # RTX 40xx
-make cuda SM=sm_75   # GTX 16xx
+make cuda SM=sm_86
+make cuda SM=sm_89
+make cuda SM=sm_75
 ```
 
 Run directly after build:
 
 ```bash
 flip_cpu/flip
-flip_cuda/flip_cuda
+flip_cuda/flip
+flip_cuda/flip --no-interop
 ```
+
+`--no-interop` skips CUDA-OpenGL interop and uses plain `cudaMemcpy` device-to-host for rendering data. T10 measures the memcpy overhead instead of map/unmap time, allowing direct comparison of interop vs non-interop rendering cost.
 
 ## Controls
 
