@@ -17,3 +17,5 @@ struct SimParams {
     float density;
     int   maxParticles;
 };
+
+extern __constant__ SimParams d_params;
