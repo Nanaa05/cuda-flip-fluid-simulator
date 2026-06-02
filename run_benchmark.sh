@@ -1,6 +1,7 @@
 #!/bin/sh
 
-LOG_FILE="benchmark_results.log"
+mkdir -p output
+LOG_FILE="output/benchmark_results.log"
 
 DATETIME=$(date '+%Y-%m-%d %H:%M:%S')
 echo "====================================================================" > "$LOG_FILE"

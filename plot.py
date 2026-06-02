@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 sqlite_db = "fluid_timeline_res200.sqlite"
-output_png = "kernel_bound_analysis.png"
+output_png = "output/kernel_bound_analysis.png"
 
 if not os.path.exists(sqlite_db):
     print(f"[ERROR] Berkas {sqlite_db} tidak ditemukan! Pastikan nsys sudah selesai dieksekusi.")
