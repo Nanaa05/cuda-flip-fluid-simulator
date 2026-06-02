@@ -43,6 +43,17 @@ flip_cuda/flip_cuda
 | R | reset scene |
 | Q / Esc | quit |
 
+## Numerical Validation (CPU vs GPU)
+
+Proves the CUDA port computes the **same physics** as the CPU reference (not just faster). It runs both on an identical scene and compares each particle's **position** and **velocity** per frame.
+
+```bash
+make validate
+./run_validation.sh
+```
+
+`--lockstep` re-syncs GPU to the CPU state every frame so each frame measures one step from an identical start. Output shows per-frame **avg** and **worst** particle error (raw + % of cell size). A steady avg of a few percent of one cell = CPU and GPU agree.
+
 ## Project Structure
 
 ```

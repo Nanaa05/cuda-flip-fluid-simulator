@@ -74,6 +74,26 @@ $(CUD_DIR)/%.o: $(CUD_DIR)/%.cu $(CUD_DIR)/flip_fluid.cuh $(CUD_DIR)/device_data
 $(CUD_DIR)/%.o: $(CUD_DIR)/%.cpp
 	$(CXX) -std=c++17 -O3 -ffast-math -I$(CUDA_HOME)/include -c -o $@ $<
 
+VAL_CU_OBJ := $(CUD_DIR)/particle_kinematics.o \
+              $(CUD_DIR)/spatial_hash.o \
+              $(CUD_DIR)/p2g_transfer.o \
+              $(CUD_DIR)/g2p_transfer.o \
+              $(CUD_DIR)/pressure_solver.o \
+              $(CUD_DIR)/colors_reduce.o \
+              $(CUD_DIR)/device_data.o \
+              $(CUD_DIR)/cuda_fluid_simulator.o \
+              $(CUD_DIR)/validate.o
+VAL_CPU_OBJ := $(CPU_DIR)/flip_fluid.o
+VAL_BIN := $(CUD_DIR)/validate
+
+validate: $(VAL_BIN)
+
+$(VAL_BIN): $(VAL_CU_OBJ) $(VAL_CPU_OBJ)
+	$(NVCC) $(NVCCFLAGS) -o $@ $^ $(CUDA_LIBS)
+
+run-validate: validate
+	$(VAL_BIN)
+
 run-cpu: cpu
 	$(CPU_BIN)
 
@@ -87,6 +107,6 @@ clean-cpu:
 	rm -f $(CPU_OBJ) $(CPU_OPT_OBJ) $(CPU_BIN) $(CPU_OPT_BIN)
 
 clean-cuda:
-	rm -f $(CU_OBJ) $(CPP_OBJ) $(CUD_BIN)
+	rm -f $(CU_OBJ) $(CPP_OBJ) $(CUD_BIN) $(CUD_DIR)/validate.o $(VAL_BIN)
 
 clean: clean-cpu clean-cuda
