@@ -259,30 +259,6 @@ static void cleanUp() {
     if (w.dpy) XCloseDisplay(w.dpy);
 }
 
-static bool g_noInterop = false;
-static float* g_rawPosX = nullptr;
-static float* g_rawPosY = nullptr;
-static float* g_rawColorR = nullptr;
-static float* g_rawColorG = nullptr;
-static float* g_rawColorB = nullptr;
-
-static void allocRawBuffers(int n) {
-    cudaMalloc(&g_rawPosX,   n * sizeof(float));
-    cudaMalloc(&g_rawPosY,   n * sizeof(float));
-    cudaMalloc(&g_rawColorR, n * sizeof(float));
-    cudaMalloc(&g_rawColorG, n * sizeof(float));
-    cudaMalloc(&g_rawColorB, n * sizeof(float));
-}
-
-static void freeRawBuffers() {
-    if (g_rawPosX)   cudaFree(g_rawPosX);
-    if (g_rawPosY)   cudaFree(g_rawPosY);
-    if (g_rawColorR) cudaFree(g_rawColorR);
-    if (g_rawColorG) cudaFree(g_rawColorG);
-    if (g_rawColorB) cudaFree(g_rawColorB);
-    g_rawPosX = g_rawPosY = g_rawColorR = g_rawColorG = g_rawColorB = nullptr;
-}
-
 int main(int argc, char** argv) {
     bool isBenchmark = false;
     int benchmarkRes = 100;
@@ -547,3 +523,4 @@ int main(int argc, char** argv) {
     cudaEventDestroy(evRenderStart); cudaEventDestroy(evRenderStop);
     return 0;
 }
+

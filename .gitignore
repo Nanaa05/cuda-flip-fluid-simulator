@@ -3,6 +3,7 @@
 flip_cpu/flip
 flip_cpu/flip_opt
 flip_cuda/flip
+flip_cuda/validate
 
 # macOS metadata junk
 __MACOSX/
@@ -32,3 +33,6 @@ result-*
 # Nsight
 *.nsys-rep
 *.ncu-rep
+
+*.sqlite
+*.nsys-rep
