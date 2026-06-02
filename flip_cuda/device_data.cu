@@ -94,3 +94,8 @@ void DeviceData::reset(const float* hPosX, const float* hPosY,
     cudaMemset(v, 0, fNumCells_ * sizeof(float));
     cudaMemset(p, 0, fNumCells_ * sizeof(float));
 }
+
+extern "C" void launchDeviceDataReset(DeviceData& d, const float* hPosX, const float* hPosY,
+                                      const float* hS, int numParticles, int fNumCells) {
+    d.reset(hPosX, hPosY, hS, numParticles, fNumCells);
+}

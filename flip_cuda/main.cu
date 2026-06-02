@@ -8,6 +8,7 @@
 #include <X11/keysym.h>
 #include <GL/gl.h>
 #include <GL/glx.h>
+#include <cuda_gl_interop.h>
 #include <chrono>
 #include <cmath>
 #include <cstdio>
@@ -190,7 +191,7 @@ static void setupScene() {
     d.allocate(g_fNumCells, pNumCells, maxParticles);
     renderInit(rp, maxParticles, g_fNumCells, g_fNumX, g_fNumY, g_h);
     interopInit(d, rp);
-    d.reset(h_posX.data(), h_posY.data(), h_s.data(), g_numParticles, g_fNumCells);
+    launchDeviceDataReset(d, h_posX.data(), h_posY.data(), h_s.data(), g_numParticles, g_fNumCells);
 }
 
 // === cleanUp ===
@@ -207,8 +208,31 @@ static void cleanUp() {
 int main(int argc, char** argv) {
     (void)argc; (void)argv;
 
+    setenv("__NV_PRIME_RENDER_OFFLOAD", "1", 0);
+    setenv("__GLX_VENDOR_LIBRARY_NAME", "nvidia", 0);
+
     createWindow();
+
+    {
+        unsigned int glDeviceCount = 0;
+        int glDevice = 0;
+        cudaError_t err = cudaGLGetDevices(&glDeviceCount, &glDevice, 1, cudaGLDeviceListCurrentFrame);
+        if (err == cudaSuccess && glDeviceCount > 0)
+            cudaSetDevice(glDevice);
+    }
+
     setupScene();
+
+    {
+        interopMapResources(d);
+        cudaMemcpy(d.posX, h_posX.data(), g_numParticles * sizeof(float), cudaMemcpyHostToDevice);
+        cudaMemcpy(d.posY, h_posY.data(), g_numParticles * sizeof(float), cudaMemcpyHostToDevice);
+        cudaMemset(d.colorR, 0, g_numParticles * sizeof(float));
+        cudaMemset(d.colorG, 0, g_numParticles * sizeof(float));
+        std::vector<float> blueB(g_numParticles, 1.0f);
+        cudaMemcpy(d.colorB, blueB.data(), g_numParticles * sizeof(float), cudaMemcpyHostToDevice);
+        interopUnmapResources(d);
+    }
 
     cudaEvent_t evFrameStart, evFrameStop;
     cudaEvent_t evSimStart, evSimStop;
@@ -236,6 +260,11 @@ int main(int argc, char** argv) {
     int mousePxX = 0, mousePxY = 0;
     float mouseSimX = 0.0f, mouseSimY = 0.0f;
     bool dragOwnedByUI = false;
+    bool gravityOn = (scene.gravity != 0.0f);
+
+    auto fpsT0 = std::chrono::steady_clock::now();
+    int fpsFrames = 0;
+    double lastFps = 0.0;
 
     glViewport(0, 0, w.width, w.height);
 
@@ -370,15 +399,30 @@ int main(int argc, char** argv) {
         uin.mousePressed = mousePressedEdge && mouseOnPanel;
         uin.mouseReleased = mouseReleasedEdge;
         flipcpu_ui::begin(uin);
-        flipcpu_ui::beginPanel(kPanelX, kPanelY, kPanelW, kPanelH, "CUDA FLIP");
+        flipcpu_ui::beginPanel(kPanelX, kPanelY, kPanelW, kPanelH, "Controls");
+        flipcpu_ui::text("FPS: %.1f", lastFps);
         flipcpu_ui::text("Particles: %d", g_numParticles);
-        flipcpu_ui::text("Sim: %.2f ms", simMs);
         flipcpu_ui::text("Frame: %ld", scene.frameNr);
-        flipcpu_ui::checkbox("Particles", &scene.showParticles);
-        flipcpu_ui::checkbox("Grid", &scene.showGrid);
-        flipcpu_ui::checkbox("Drift Comp", &scene.compensateDrift);
-        flipcpu_ui::checkbox("Separate", &scene.separateParticles);
-        flipcpu_ui::slider("PIC<->FLIP", &scene.flipRatio, 0.0f, 1.0f);
+        flipcpu_ui::checkbox("Particles",          &scene.showParticles);
+        flipcpu_ui::checkbox("Grid",               &scene.showGrid);
+        flipcpu_ui::checkbox("Compensate Drift",   &scene.compensateDrift);
+        flipcpu_ui::checkbox("Separate Particles", &scene.separateParticles);
+        if (flipcpu_ui::checkbox("Gravity", &gravityOn)) {
+            scene.gravity = gravityOn ? -9.81f : 0.0f;
+        }
+        flipcpu_ui::slider("PIC <-> FLIP", &scene.flipRatio, 0.0f, 1.0f);
+        {
+            float resFloat = (float)scene.resolution;
+            flipcpu_ui::slider("Grid Res", &resFloat, 30.0f, 200.0f);
+            int newRes = (int)(resFloat + 0.5f);
+            if (newRes != scene.resolution) {
+                scene.resolution = newRes;
+                interopDestroy(d);
+                renderDestroy(rp);
+                d.free();
+                setupScene();
+            }
+        }
         flipcpu_ui::checkbox("Pause", &scene.paused);
         if (flipcpu_ui::button("Reset")) {
             interopDestroy(d);
@@ -419,6 +463,15 @@ int main(int argc, char** argv) {
                 telemetry.reset();
             }
             scene.frameNr++;
+        }
+
+        fpsFrames++;
+        auto now = std::chrono::steady_clock::now();
+        double elapsed = std::chrono::duration<double>(now - fpsT0).count();
+        if (elapsed >= 0.5) {
+            lastFps = fpsFrames / elapsed;
+            fpsT0 = now;
+            fpsFrames = 0;
         }
     }
 

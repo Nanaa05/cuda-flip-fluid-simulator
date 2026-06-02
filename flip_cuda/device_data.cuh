@@ -41,3 +41,6 @@ struct DeviceData {
     void reset(const float* hPosX, const float* hPosY,
                const float* hS, int numParticles, int fNumCells);
 };
+
+extern "C" void launchDeviceDataReset(DeviceData& d, const float* hPosX, const float* hPosY,
+                                      const float* hS, int numParticles, int fNumCells);

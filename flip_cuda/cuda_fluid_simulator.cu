@@ -22,6 +22,10 @@ static size_t cub_temp_bytes = 0;
 static float cachedRestDensity = 0.0f;
 static bool isFirstFrame = true;
 
+GpuTelemetry g_gpu_telemetry;
+static cudaEvent_t ev_start = nullptr;
+static cudaEvent_t ev_stop = nullptr;
+
 // === carveObstacle_kernel: rasterize moving obstacle into s[], u[], v[] ===
 __global__ void carveObstacle_kernel(
     float* s, float* u, float* v,
@@ -68,11 +72,22 @@ void gpuSimulate(DeviceData& d, int numParticles, float dt, float gravity, float
         cudaMalloc(&d_cub_temp, cub_temp_bytes);
     }
 
+    if (ev_start == nullptr) {
+        cudaEventCreate(&ev_start);
+        cudaEventCreate(&ev_stop);
+    }
+
     float subDt = dt / numSubSteps;
+
+    g_gpu_telemetry.pressureIters = numPressureIters;
+    float ms = 0.0f;
+    double frame_t1 = 0.0, frame_t2 = 0.0, frame_t3 = 0.0;
+    double frame_t4 = 0.0, frame_t5 = 0.0, frame_t6 = 0.0, frame_t7 = 0.0;
 
     if (obstacleRadius > 0.0f) {
         dim3 threads(16, 16);
         dim3 blocks((params.fNumX + 15) / 16, (params.fNumY + 15) / 16);
+        
         carveObstacle_kernel<<<blocks, threads>>>(
             d.s, d.u, d.v,
             obstacleX, obstacleY, obstacleRadius,
@@ -80,37 +95,92 @@ void gpuSimulate(DeviceData& d, int numParticles, float dt, float gravity, float
         );
     }
 
+    // Main Integration Sub-steps
     for (int step = 0; step < numSubSteps; ++step) {
-        // T1: integrate particles
+        // T1: Kinematics
+        cudaEventRecord(ev_start);
         launchIntegrateParticles(d, numParticles, subDt, gravity);
+        cudaEventRecord(ev_stop);
+        cudaEventSynchronize(ev_stop);
+        cudaEventElapsedTime(&ms, ev_start, ev_stop);
+        frame_t1 += ms;
 
-        // T2: push particles apart
-        if (separateParticles)
+        // T2: Spatial Hash & Separation
+        cudaEventRecord(ev_start);
+        if (separateParticles) {
             launchPushParticlesApart(d, numParticles, numParticleIters, d_cub_temp, cub_temp_bytes);
+        }
+        cudaEventRecord(ev_stop);
+        cudaEventSynchronize(ev_stop);
+        cudaEventElapsedTime(&ms, ev_start, ev_stop);
+        frame_t2 += ms;
 
-        // T3: handle collisions
+        // T3: Dynamic Collisions
+        cudaEventRecord(ev_start);
         launchHandleCollisions(d, numParticles, obstacleX, obstacleY, obstacleRadius, obstacleVelX, obstacleVelY);
+        cudaEventRecord(ev_stop);
+        cudaEventSynchronize(ev_stop);
+        cudaEventElapsedTime(&ms, ev_start, ev_stop);
+        frame_t3 += ms;
 
-        // T4: P2G transfer
+        // T4: P2G Transfer & Boundary Recovery
+        cudaEventRecord(ev_start);
         launchSavePrevVelocities(d, params.fNumCells);
         launchClassifyCells(d, params.fNumCells, numParticles, params.fInvSpacing, params.fNumX, params.fNumY);
         launchP2G(d, numParticles, params.fNumCells, params.h, params.fInvSpacing, params.fNumX, params.fNumY);
         launchRestoreSolidCells(d, params.fNumX, params.fNumY);
+        cudaEventRecord(ev_stop);
+        cudaEventSynchronize(ev_stop);
+        cudaEventElapsedTime(&ms, ev_start, ev_stop);
+        frame_t4 += ms;
 
-        // T5: density field
+        // T5: Volume Calculation (Density Field)
+        cudaEventRecord(ev_start);
         launchUpdateParticleDensity(d, numParticles, params.fNumCells, params.h, params.fInvSpacing, params.fNumX, params.fNumY);
         if (isFirstFrame) {
             cachedRestDensity = launchComputeRestDensity(d, params.fNumCells);
             isFirstFrame = false;
         }
+        cudaEventRecord(ev_stop);
+        cudaEventSynchronize(ev_stop);
+        cudaEventElapsedTime(&ms, ev_start, ev_stop);
+        frame_t5 += ms;
 
-        // T6: pressure solve
+        // T6: Red-Black Gauss-Seidel Solver (Divergence / Pressure)
+        cudaEventRecord(ev_start);
         launchRedBlackSolver(d, numPressureIters, subDt, overRelaxation, compensateDrift, cachedRestDensity);
+        cudaEventRecord(ev_stop);
+        cudaEventSynchronize(ev_stop);
+        cudaEventElapsedTime(&ms, ev_start, ev_stop);
+        frame_t6 += ms;
 
-        // T7: G2P transfer
+        // T7: G2P Transfer (PIC / FLIP combination)
+        cudaEventRecord(ev_start);
         launchG2P(d, numParticles, flipRatio, params.h, params.fInvSpacing, params.fNumX, params.fNumY);
+        cudaEventRecord(ev_stop);
+        cudaEventSynchronize(ev_stop);
+        cudaEventElapsedTime(&ms, ev_start, ev_stop);
+        frame_t7 += ms;
     }
 
+    // Dorong akumulasi sub-step ke struktur global pencatatan
+    g_gpu_telemetry.t1 += frame_t1;
+    g_gpu_telemetry.t2 += frame_t2;
+    g_gpu_telemetry.t3 += frame_t3;
+    g_gpu_telemetry.t4 += frame_t4;
+    g_gpu_telemetry.t5 += frame_t5;
+    g_gpu_telemetry.t6 += frame_t6;
+    g_gpu_telemetry.t7 += frame_t7;
+
+    // T8: Post-Substep Reductions and Rendering Metadata
+    cudaEventRecord(ev_start);
+    cachedRestDensity = launchComputeRestDensity(d, params.fNumCells);
+    launchUpdateParticleColors(d, numParticles, cachedRestDensity);
+    launchUpdateCellColors(d, params.fNumCells, cachedRestDensity);
+    cudaEventRecord(ev_stop);
+    cudaEventSynchronize(ev_stop);
+    cudaEventElapsedTime(&ms, ev_start, ev_stop);
+    g_gpu_telemetry.t8 += ms;
 }
 
 // === gpuUpdateColors: T8 recompute rest density and update particle/cell colors ===

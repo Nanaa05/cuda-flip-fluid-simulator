@@ -6,9 +6,9 @@
 // === interopInit: register particleVBO and colorVBO with CUDA ===
 void interopInit(DeviceData& d, const RenderPipeline& rp) {
     cudaGraphicsGLRegisterBuffer(&d.vbo_pos_resource, rp.particleVBO,
-                                 cudaGraphicsRegisterFlagsWriteDiscard);
+                                 cudaGraphicsRegisterFlagsNone);
     cudaGraphicsGLRegisterBuffer(&d.vbo_col_resource, rp.colorVBO,
-                                 cudaGraphicsRegisterFlagsWriteDiscard);
+                                 cudaGraphicsRegisterFlagsNone);
 }
 
 // === interopMapResources: map VBOs, set posX/Y and colorR/G/B device pointers ===
