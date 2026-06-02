@@ -19,3 +19,17 @@ struct SimParams {
 };
 
 extern __constant__ SimParams d_params;
+
+struct GpuTelemetry {
+    double t1 = 0.0, t2 = 0.0, t3 = 0.0, t4 = 0.0, t5 = 0.0;
+    double t6 = 0.0, t7 = 0.0, t8 = 0.0, t9 = 0.0, t10 = 0.0, t_total = 0.0;
+    int frames = 0;
+    int pressureIters = 0;
+
+    void reset() {
+        t1 = t2 = t3 = t4 = t5 = t6 = t7 = t8 = t9 = t10 = t_total = 0.0;
+        frames = 0;
+    }
+};
+
+extern GpuTelemetry g_gpu_telemetry;
