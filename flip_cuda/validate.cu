@@ -210,8 +210,7 @@ int main(int argc, char** argv) {
     std::printf("====================================================================\n");
     std::printf("        CPU vs GPU  -  Numerical Validation (FLIP Fluid)\n");
     std::printf("====================================================================\n");
-    std::printf("  Mode        : %s\n", lockstep ? "LOCKSTEP (fair per-frame comparison)"
-                                                 : "FREE-RUN (long-term, diverges by nature)");
+    std::printf("  Mode        : LOCKSTEP (fair per-frame comparison)\n");
     std::printf("  Particles   : %d\n", numParticles);
     std::printf("  Frames      : %d\n", numFrames);
     std::printf("  Cell size h : %.5f  (errors below are shown as %% of one cell)\n", gh);
@@ -283,8 +282,6 @@ int main(int argc, char** argv) {
     std::printf("  SUMMARY  avg position %.2e (%.2f%% of a cell) | avg velocity %.4f m/s\n",
                 sumPosMeanPct / numFrames * gh / 100.0,
                 avgPosMeanPct, avgVelMean);
-    if (!lockstep)
-        std::printf("  (FREE-RUN: numbers grow by nature - use --lockstep for the real check)\n");
     std::printf("====================================================================\n");
 
     cudaFree(d.posX); cudaFree(d.posY);

@@ -48,15 +48,20 @@ flip_cuda/flip_cuda
 Proves the CUDA port computes the **same physics** as the CPU reference (not just faster). It runs both on an identical scene and compares each particle's **position** and **velocity** per frame.
 
 ```bash
-make validate                       # build (requires CUDA)
-./flip_cuda/validate --lockstep     # the demonstration: fair per-frame comparison
+make validate
+./run_validation.sh
 ```
 
-`--lockstep` re-syncs the GPU to the CPU state every frame, so each frame measures a single step from an identical start. The output reports, per frame, how much the **typical** particle and the **worst** particle differ, plus a plain-language verdict. A typical error of a few percent of one cell = CPU and GPU agree.
+Or run a single test manually:
 
-Optional flags: `--iters 500` (converge the pressure solver -> smaller error), `--frames N`, `--res N`, `--no-obstacle`, `--no-separate`.
+```bash
+./flip_cuda/validate --lockstep
+./flip_cuda/validate --lockstep --iters 500
+./flip_cuda/validate --lockstep --no-separate
+./flip_cuda/validate --lockstep --no-obstacle
+```
 
-> Without `--lockstep` the two sims run independently. Fluids are chaotic, so tiny rounding differences grow over time and the numbers look huge -- this is expected, not a bug. Always use `--lockstep` for the correctness demo.
+`--lockstep` re-syncs GPU to the CPU state every frame so each frame measures one step from an identical start. Output shows per-frame **avg** and **worst** particle error (raw + % of cell size). A steady avg of a few percent of one cell = CPU and GPU agree.
 
 ## Project Structure
 
