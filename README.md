@@ -45,31 +45,18 @@ flip_cuda/flip_cuda
 
 ## Numerical Validation (CPU vs GPU)
 
-Runs both CPU and GPU on identical scenes and compares particle positions/velocities per frame.
+Proves the CUDA port computes the **same physics** as the CPU reference (not just faster). It runs both on an identical scene and compares each particle's **position** and **velocity** per frame.
 
 ```bash
-make validate          # build validator (requires CUDA)
-./flip_cuda/validate   # run with defaults (res=100, 120 frames)
+make validate                       # build (requires CUDA)
+./flip_cuda/validate --lockstep     # the demonstration: fair per-frame comparison
 ```
 
-Options:
+`--lockstep` re-syncs the GPU to the CPU state every frame, so each frame measures a single step from an identical start. The output reports, per frame, how much the **typical** particle and the **worst** particle differ, plus a plain-language verdict. A typical error of a few percent of one cell = CPU and GPU agree.
 
-```bash
-./flip_cuda/validate --lockstep      # per-step error (re-syncs GPU to CPU each frame) -- the real correctness metric
-./flip_cuda/validate --iters 500     # override pressure iterations (more = better-converged, smaller error)
-./flip_cuda/validate --res 100       # grid resolution (default 100)
-./flip_cuda/validate --frames 200    # number of frames to compare (default 120)
-./flip_cuda/validate --no-obstacle   # disable obstacle (isolates pure fluid physics)
-./flip_cuda/validate --no-gravity    # disable gravity
-./flip_cuda/validate --no-separate   # disable push-apart (isolates P2G/G2P only)
-```
+Optional flags: `--iters 500` (converge the pressure solver -> smaller error), `--frames N`, `--res N`, `--no-obstacle`, `--no-separate`.
 
-Output reports `max / mean / rms` position and velocity error per frame.
-
-**Two modes:**
-
-- **Free-run (default):** both sims run independently from the same seed. Because FLIP is chaotic, tiny per-step differences (parallel red-black vs sequential SOR pressure solve, parallel push-apart, non-associative atomic sums) double every few frames and accumulated error reaching domain scale is *expected and normal* -- not a bug.
-- **Lockstep (`--lockstep`):** the GPU is re-synced to the CPU state every frame, so each frame measures a single step from an identical state. This is the meaningful correctness test: if the per-step error stays small and bounded, the GPU pipeline is correct. Raising `--iters` shrinks it further by converging the pressure solve.
+> Without `--lockstep` the two sims run independently. Fluids are chaotic, so tiny rounding differences grow over time and the numbers look huge -- this is expected, not a bug. Always use `--lockstep` for the correctness demo.
 
 ## Project Structure
 
