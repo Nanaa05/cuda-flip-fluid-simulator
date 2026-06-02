@@ -148,6 +148,9 @@ void gpuSimulate(DeviceData& d, int numParticles, float dt, float gravity, float
 
         // T6: Red-Black Gauss-Seidel Solver (Divergence / Pressure)
         cudaEventRecord(ev_start);
+        cudaMemcpy(d.prevU, d.u, params.fNumCells * sizeof(float), cudaMemcpyDeviceToDevice);
+        cudaMemcpy(d.prevV, d.v, params.fNumCells * sizeof(float), cudaMemcpyDeviceToDevice);
+        cudaMemset(d.p, 0, params.fNumCells * sizeof(float));
         launchRedBlackSolver(d, numPressureIters, subDt, overRelaxation, compensateDrift, cachedRestDensity);
         cudaEventRecord(ev_stop);
         cudaEventSynchronize(ev_stop);
