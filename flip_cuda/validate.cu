@@ -219,11 +219,9 @@ int main(int argc, char** argv) {
                 gravity, flipRatio, numPressureIters,
                 obstacleRadius > 0.0f ? "on" : "off", separateParticles ? "on" : "off");
     std::printf("--------------------------------------------------------------------\n");
-    std::printf("  How to read: 'typical' = average particle, 'worst' = single most\n");
-    std::printf("  extreme particle. Small + steady 'typical' = CPU and GPU agree.\n");
-    std::printf("--------------------------------------------------------------------\n");
-    std::printf("  %-5s | %-22s | %-22s\n", "frame", "POSITION (%% of cell)", "VELOCITY (m/s)");
-    std::printf("  %-5s | %-10s %-11s | %-10s %-11s\n", "", "typical", "worst", "typical", "worst");
+    std::printf("  %-5s | %-36s | %-26s\n", "frame", "POSITION", "VELOCITY (m/s)");
+    std::printf("  %-5s | %-10s %-9s %-10s | %-12s %-12s\n",
+                "", "avg (raw)", "avg (%%)", "worst (%%)", "avg", "worst");
     std::printf("--------------------------------------------------------------------\n");
 
     double worstPos = 0.0;
@@ -270,9 +268,9 @@ int main(int argc, char** argv) {
 
         bool show = (frame < 10) || (frame % 10 == 0) || (frame == numFrames - 1);
         if (show) {
-            std::printf("  %-5d | %8.2f%%  %8.1f%%  | %8.3f  %9.3f\n",
+            std::printf("  %-5d | %-10.2e %7.2f%%  %9.1f%%  | %-12.4f %-12.4f\n",
                         frame,
-                        100.0 * posMean / gh, 100.0 * posMax / gh,
+                        posMean, 100.0 * posMean / gh, 100.0 * posMax / gh,
                         velMean, velMax);
         }
         (void)posRms; (void)velRms;
@@ -282,33 +280,11 @@ int main(int argc, char** argv) {
     double avgVelMean = sumVelMean / numFrames;
 
     std::printf("--------------------------------------------------------------------\n");
-    std::printf("\n");
-    std::printf("====================================================================\n");
-    std::printf("                          SUMMARY\n");
-    std::printf("====================================================================\n");
-    std::printf("  Typical particle differs by, on average:\n");
-    std::printf("     position : %.2f%% of a cell\n", avgPosMeanPct);
-    std::printf("     velocity : %.4f m/s\n", avgVelMean);
-    std::printf("  Single worst particle (any frame): %.0f%% of a cell (frame %d)\n",
-                100.0 * worstPos / gh, worstPosFrame);
-    std::printf("--------------------------------------------------------------------\n");
-    if (lockstep) {
-        bool good = avgPosMeanPct < 5.0;
-        std::printf("  VERDICT: %s\n", good
-            ? "CPU and GPU MATCH. The typical particle stays within a tiny"
-            : "Larger-than-expected gap - inspect the per-stage code.");
-        if (good) {
-            std::printf("           fraction of one cell every frame, so the GPU port is\n");
-            std::printf("           numerically correct. The occasional 'worst' spikes are\n");
-            std::printf("           1-2 particles at the obstacle/water edge - normal for a\n");
-            std::printf("           parallel fluid solver, not a bug.\n");
-        }
-    } else {
-        std::printf("  NOTE: This FREE-RUN mode lets both sims run independently. Fluids\n");
-        std::printf("        are chaotic, so tiny rounding differences grow over time and\n");
-        std::printf("        the numbers will look big - this is expected, NOT a bug.\n");
-        std::printf("        For a fair correctness check, run with  --lockstep\n");
-    }
+    std::printf("  SUMMARY  avg position %.2e (%.2f%% of a cell) | avg velocity %.4f m/s\n",
+                sumPosMeanPct / numFrames * gh / 100.0,
+                avgPosMeanPct, avgVelMean);
+    if (!lockstep)
+        std::printf("  (FREE-RUN: numbers grow by nature - use --lockstep for the real check)\n");
     std::printf("====================================================================\n");
 
     cudaFree(d.posX); cudaFree(d.posY);
