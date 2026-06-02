@@ -90,6 +90,7 @@ int g_numParticles = 0;
 int g_fNumX = 0;
 int g_fNumY = 0;
 float g_h = 0.0f;
+float g_particleRadius = 0.0f;
 int g_fNumCells = 0;
 
 static int s_glxAttrs[] = { GLX_RGBA, GLX_DOUBLEBUFFER, GLX_DEPTH_SIZE, 24, None };
@@ -127,6 +128,7 @@ static void createWindow() {
 static void setupScene() {
     float h = SIM_HEIGHT / (float)scene.resolution;
     float r = 0.3f * h;
+    g_particleRadius = r;
     float dx = 2.0f * r;
     float dy = std::sqrt(3.0f) / 2.0f * dx;
 
@@ -409,7 +411,8 @@ int main(int argc, char** argv) {
             glPushMatrix();
             glLoadIdentity();
 
-            float diameterPx = 2.0f * g_h * 0.3f * ((float)w.height / SIM_HEIGHT);
+            float pxPerSimUnit = (float)w.height / SIM_HEIGHT;
+            float diameterPx = 2.0f * g_particleRadius * pxPerSimUnit;
             if (diameterPx < 1.0f) diameterPx = 1.0f;
             glDisable(GL_PROGRAM_POINT_SIZE);
             glEnable(GL_POINT_SMOOTH);
