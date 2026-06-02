@@ -52,15 +52,6 @@ make validate
 ./run_validation.sh
 ```
 
-Or run a single test manually:
-
-```bash
-./flip_cuda/validate --lockstep
-./flip_cuda/validate --lockstep --iters 500
-./flip_cuda/validate --lockstep --no-separate
-./flip_cuda/validate --lockstep --no-obstacle
-```
-
 `--lockstep` re-syncs GPU to the CPU state every frame so each frame measures one step from an identical start. Output shows per-frame **avg** and **worst** particle error (raw + % of cell size). A steady avg of a few percent of one cell = CPU and GPU agree.
 
 ## Project Structure

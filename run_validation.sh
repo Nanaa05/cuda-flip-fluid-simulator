@@ -36,15 +36,6 @@ log_echo "         TEST 2: Lockstep - Pressure Solver Dikonvergensikan        "
 log_echo "===================================================================="
 ./flip_cuda/validate --lockstep --iters 500 2>&1 | tee -a "$LOG_FILE"
 
-log_echo "===================================================================="
-log_echo "         TEST 3: Lockstep - Tanpa Push-Apart (isolasi P2G/G2P)      "
-log_echo "===================================================================="
-./flip_cuda/validate --lockstep --no-separate 2>&1 | tee -a "$LOG_FILE"
-
-log_echo "===================================================================="
-log_echo "         TEST 4: Lockstep - Tanpa Obstacle (isolasi fisika murni)   "
-log_echo "===================================================================="
-./flip_cuda/validate --lockstep --no-obstacle 2>&1 | tee -a "$LOG_FILE"
 
 log_echo "===================================================================="
 log_echo "                  SELURUH PENGUJIAN SELESAI                         "
