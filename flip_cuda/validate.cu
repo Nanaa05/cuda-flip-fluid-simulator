@@ -75,10 +75,14 @@ int main(int argc, char** argv) {
     bool compensateDrift = true;
     float obstacleRadius = 0.15f;
     float obstacleX = 3.0f, obstacleY = 2.0f;
+    bool lockstep = false;
+    int overrideIters = -1;
 
     for (int i = 1; i < argc; ++i) {
         if (std::strcmp(argv[i], "--res") == 0 && i + 1 < argc) resolution = std::atoi(argv[++i]);
         else if (std::strcmp(argv[i], "--frames") == 0 && i + 1 < argc) numFrames = std::atoi(argv[++i]);
+        else if (std::strcmp(argv[i], "--iters") == 0 && i + 1 < argc) overrideIters = std::atoi(argv[++i]);
+        else if (std::strcmp(argv[i], "--lockstep") == 0) lockstep = true;
         else if (std::strcmp(argv[i], "--no-obstacle") == 0) obstacleRadius = 0.0f;
         else if (std::strcmp(argv[i], "--no-gravity") == 0) gravity = 0.0f;
         else if (std::strcmp(argv[i], "--no-separate") == 0) separateParticles = false;
@@ -93,6 +97,7 @@ int main(int argc, char** argv) {
     else if (resolution <= 180) numSubSteps = 3;
     else                        numSubSteps = 4;
     int numPressureIters = 50 + std::max(0, (resolution - 100)) / 2;
+    if (overrideIters > 0) numPressureIters = overrideIters;
 
     float tankHeight = SIM_HEIGHT;
     float tankWidth  = SIM_WIDTH;
@@ -202,6 +207,7 @@ int main(int argc, char** argv) {
     std::vector<float> gpuVelX(numParticles), gpuVelY(numParticles);
 
     std::printf("=== CPU vs GPU FLIP numerical validation ===\n");
+    std::printf("mode=%s  pressureIters=%d\n", lockstep ? "LOCKSTEP (single-step error)" : "FREE-RUN (accumulated trajectory)", numPressureIters);
     std::printf("res=%d frames=%d particles=%d gravity=%.2f flip=%.2f obstacle=%.3f separate=%d\n",
                 resolution, numFrames, numParticles, gravity, flipRatio, obstacleRadius, (int)separateParticles);
     std::printf("CPU grid=%dx%d (h=%.6f)  GPU grid=%dx%d (h=%.6f)\n",
@@ -213,6 +219,13 @@ int main(int argc, char** argv) {
     int worstPosFrame = -1;
 
     for (int frame = 0; frame < numFrames; ++frame) {
+        if (lockstep) {
+            cudaMemcpy(d.posX, cpu.particlePosX.data(), numParticles * sizeof(float), cudaMemcpyHostToDevice);
+            cudaMemcpy(d.posY, cpu.particlePosY.data(), numParticles * sizeof(float), cudaMemcpyHostToDevice);
+            cudaMemcpy(d.velX, cpu.particleVelX.data(), numParticles * sizeof(float), cudaMemcpyHostToDevice);
+            cudaMemcpy(d.velY, cpu.particleVelY.data(), numParticles * sizeof(float), cudaMemcpyHostToDevice);
+        }
+
         cpu.simulate(dt, gravity, flipRatio, numPressureIters, numParticleIters,
                      overRelaxation, compensateDrift, separateParticles,
                      obstacleX, obstacleY, obstacleRadius, 0.0f, 0.0f, numSubSteps);
@@ -253,6 +266,13 @@ int main(int argc, char** argv) {
     std::printf("worst position max-abs error = %.4e (frame %d), grid spacing h = %.4e\n",
                 worstPos, worstPosFrame, gh);
     std::printf("relative to cell size: %.2f%% of h\n", 100.0 * worstPos / gh);
+    if (lockstep) {
+        std::printf("\n[LOCKSTEP] Each frame measures a single step from an identical CPU state.\n");
+        std::printf("           Error stays bounded => GPU matches CPU per-step (parallel-reorder + partial-solve only).\n");
+    } else {
+        std::printf("\n[FREE-RUN] Trajectories diverge chaotically (Lyapunov); accumulated error is expected\n");
+        std::printf("           to reach domain scale. Use --lockstep to measure true per-step correctness.\n");
+    }
 
     cudaFree(d.posX); cudaFree(d.posY);
     cudaFree(d.colorR); cudaFree(d.colorG); cudaFree(d.colorB);

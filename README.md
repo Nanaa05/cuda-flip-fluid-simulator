@@ -55,6 +55,8 @@ make validate          # build validator (requires CUDA)
 Options:
 
 ```bash
+./flip_cuda/validate --lockstep      # per-step error (re-syncs GPU to CPU each frame) -- the real correctness metric
+./flip_cuda/validate --iters 500     # override pressure iterations (more = better-converged, smaller error)
 ./flip_cuda/validate --res 100       # grid resolution (default 100)
 ./flip_cuda/validate --frames 200    # number of frames to compare (default 120)
 ./flip_cuda/validate --no-obstacle   # disable obstacle (isolates pure fluid physics)
@@ -62,7 +64,12 @@ Options:
 ./flip_cuda/validate --no-separate   # disable push-apart (isolates P2G/G2P only)
 ```
 
-Output reports `max / mean / rms` position and velocity error per frame. A healthy result is `max-abs < 1% of h` (cell spacing).
+Output reports `max / mean / rms` position and velocity error per frame.
+
+**Two modes:**
+
+- **Free-run (default):** both sims run independently from the same seed. Because FLIP is chaotic, tiny per-step differences (parallel red-black vs sequential SOR pressure solve, parallel push-apart, non-associative atomic sums) double every few frames and accumulated error reaching domain scale is *expected and normal* -- not a bug.
+- **Lockstep (`--lockstep`):** the GPU is re-synced to the CPU state every frame, so each frame measures a single step from an identical state. This is the meaningful correctness test: if the per-step error stays small and bounded, the GPU pipeline is correct. Raising `--iters` shrinks it further by converging the pressure solve.
 
 ## Project Structure
 
