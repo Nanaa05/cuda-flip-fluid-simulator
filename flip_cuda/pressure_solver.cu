@@ -1,8 +1,6 @@
-// flip_cuda/pressure_solver.cu
-// NODE F (Fachriza) -- T6_pressure
-
 #include "flip_fluid.cuh"
 #include "device_data.cuh"
+#include <device_launch_parameters.h>
 
 // pressureSolve_kernel(int parity)
 // - parity 0 = RED cells (i+j) % 2 == 0
@@ -13,8 +11,71 @@
 // - if compensateDrift: div -= k * max(0, particleDensity[center] - restDensity)
 // - pVal = -(div / sSum) * overRelaxation
 // - update p[center], u/v faces of center and 4 neighbors
-// - called alternately: RED pass then BLACK pass, for numIters/2 rounds
+// - called alternately. RED pass, BLACK pass, for numIters/2 rounds
 
-// launchRedBlackSolver(DeviceData& d, int numIters, float dt,
-//                      float overRelaxation, bool compensateDrift,
-//                      float restDensity)
+__global__ void pressureSolve_kernel(
+    int parity,
+    float* u, float* v, float* p, const float* s,
+    const int* cellType, const float* particleDensity,
+    float overRelaxation, bool compensateDrift, float restDensity)
+{
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    int j = blockIdx.y * blockDim.y + threadIdx.y;
+
+    // boundary check
+    // skip the outermost layers
+    if (i < 1 || i >= d_params.fNumX - 1 || j < 1 || j >= d_params.fNumY - 1)
+        return;
+
+    if ((i + j) % 2 != parity)
+        return;
+
+    // Linear index for standard fNumX x fNumY row-major mapping (column-major based on your stride)
+    int center = i * d_params.fNumY + j;
+
+    if (cellType[center] != FLUID_CELL)
+        return;
+
+    // MAC grid neighbor indices
+    int left   = (i - 1) * d_params.fNumY + j;
+    int right  = (i + 1) * d_params.fNumY + j;
+    int bottom = i * d_params.fNumY + (j - 1);
+    int top    = i * d_params.fNumY + (j + 1);
+
+    float sLeft   = s[left];
+    float sRight  = s[right];
+    float sBottom = s[bottom];
+    float sTop    = s[top];
+
+    float sSum = sLeft + sRight + sBottom + sTop;
+    if (sSum == 0.0f) return; // solid surrounds
+
+    // velocity divergence
+    // u=left face, v=bottom face on MAC grid
+    float div = u[right] - u[center] + v[top] - v[center];
+
+    // volume preservation/drift compensation
+    if (compensateDrift) {
+        // drift coefficient
+        // 1.0f acts as a solid base modifier for typical FLIP setups
+        const float k_drift = 1.0f;
+        float densityErr = particleDensity[center] - restDensity;
+        if (densityErr > 0.0f) {
+            div -= k_drift * densityErr;
+        }
+    }
+
+    float pVal = -(div / sSum) * overRelaxation;
+
+    // update center pressure
+    p[center] += pVal;
+
+    // Apply pressure gradient to velocities (scatter)
+    // Left face (u[center]) gets pushed left, making velocity more negative
+    // Right face (u[right]) gets pushed right, making velocity more positive
+    u[center] -= sLeft   * pVal;
+    u[right]  += sRight  * pVal;
+    v[center] -= sBottom * pVal;
+    v[top]    += sTop    * pVal;
+}
+
