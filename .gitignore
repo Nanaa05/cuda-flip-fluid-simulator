@@ -2,6 +2,7 @@
 *.o
 flip
 flip_cuda
+flip_opt
 
 # macOS metadata junk
 __MACOSX/
