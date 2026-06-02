@@ -79,3 +79,35 @@ __global__ void pressureSolve_kernel(
     v[top]    += sTop    * pVal;
 }
 
+void launchRedBlackSolver(DeviceData& d, int numIters, float dt,
+                          float overRelaxation, bool compensateDrift,
+                          float restDensity)
+{
+    // Read MAC grid dimensions from the device constant memory symbol `d_params`
+    int fNumX, fNumY;
+    cudaMemcpyFromSymbol(&fNumX, d_params, sizeof(int), offsetof(SimParams, fNumX), cudaMemcpyDeviceToHost);
+    cudaMemcpyFromSymbol(&fNumY, d_params, sizeof(int), offsetof(SimParams, fNumY), cudaMemcpyDeviceToHost);
+
+    // 2D thread block
+    dim3 threads(16, 16);
+    dim3 blocks((fNumX + threads.x - 1) / threads.x,
+                (fNumY + threads.y - 1) / threads.y);
+
+    // Run the solver. 1 iteration = 1 full pass of RED + BLACK cells.
+    for (int iter = 0; iter < numIters; ++iter) {
+
+        // RED pass (parity = 0)
+        pressureSolve_kernel<<<blocks, threads>>>(
+            0, d.u, d.v, d.p, d.s,
+            d.cellType, d.particleDensity,
+            overRelaxation, compensateDrift, restDensity
+        );
+
+        // BLACK pass (parity = 1)
+        pressureSolve_kernel<<<blocks, threads>>>(
+            1, d.u, d.v, d.p, d.s,
+            d.cellType, d.particleDensity,
+            overRelaxation, compensateDrift, restDensity
+        );
+    }
+}
