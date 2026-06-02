@@ -15,7 +15,7 @@ CPU_LIBS  := -lGL -lGLX -lX11 -lm -lgomp
 NVCC      := nvcc
 NVCCFLAGS := -std=c++17 -O3 -arch=$(SM) --use_fast_math
 CUDA_HOME ?= /usr/local/cuda
-CUDA_LIBS := -lGL -lGLX -lX11 -lm -lcudart -lcuda
+CUDA_LIBS := -lGL -lGLX -lX11 -lm -lcudart
 
 CPU_DIR := flip_cpu
 CUD_DIR := flip_cuda

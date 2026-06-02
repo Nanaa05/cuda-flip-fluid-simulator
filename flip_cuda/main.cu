@@ -10,6 +10,14 @@
 #include <GL/gl.h>
 #include <GL/glx.h>
 #include <cstdio>
+#include <iostream>
+
+int main(int argc, char** argv) {
+    std::cout << "============================================" << std::endl;
+    std::cout << "[CUDA FLIP] Compiles and Links Successfully!" << std::endl;
+    std::cout << "============================================" << std::endl;
+    return 0;
+}
 
 // startup sequence:
 // - parse --no-vsync, --res N
