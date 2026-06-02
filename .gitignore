@@ -1,8 +1,8 @@
 # Compilation artifacts
 *.o
-flip
-flip_cuda
-flip_opt
+flip_cpu/flip
+flip_cpu/flip_opt
+flip_cuda/flip
 
 # macOS metadata junk
 __MACOSX/

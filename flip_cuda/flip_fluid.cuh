@@ -8,7 +8,6 @@ constexpr int FLUID_CELL = 0;
 constexpr int AIR_CELL   = 1;
 constexpr int SOLID_CELL = 2;
 
-// Uploaded once via cudaMemcpyToSymbol at scene setup.
 struct SimParams {
     int   fNumX, fNumY, fNumCells;
     float h, fInvSpacing;
@@ -18,5 +17,3 @@ struct SimParams {
     float density;
     int   maxParticles;
 };
-
-extern __constant__ SimParams d_params;
