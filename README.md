@@ -43,6 +43,27 @@ flip_cuda/flip_cuda
 | R | reset scene |
 | Q / Esc | quit |
 
+## Numerical Validation (CPU vs GPU)
+
+Runs both CPU and GPU on identical scenes and compares particle positions/velocities per frame.
+
+```bash
+make validate          # build validator (requires CUDA)
+./flip_cuda/validate   # run with defaults (res=100, 120 frames)
+```
+
+Options:
+
+```bash
+./flip_cuda/validate --res 100       # grid resolution (default 100)
+./flip_cuda/validate --frames 200    # number of frames to compare (default 120)
+./flip_cuda/validate --no-obstacle   # disable obstacle (isolates pure fluid physics)
+./flip_cuda/validate --no-gravity    # disable gravity
+./flip_cuda/validate --no-separate   # disable push-apart (isolates P2G/G2P only)
+```
+
+Output reports `max / mean / rms` position and velocity error per frame. A healthy result is `max-abs < 1% of h` (cell spacing).
+
 ## Project Structure
 
 ```
