@@ -1,37 +1,46 @@
-// flip_cuda/gl_render_pipeline.h
-// NODE I1 (Fachriza) -- modern OpenGL VBO pipeline
-
 #pragma once
 #include <GL/gl.h>
 
 struct RenderPipeline {
+    // VAO untuk partikel
     GLuint particleVAO = 0;
-    GLuint particleVBO = 0;  // float2 positions, maxParticles
-    GLuint colorVBO    = 0;  // float3 colors, maxParticles
-    GLuint gridVAO     = 0;
-    GLuint gridVBO     = 0;  // float3 per cell color, fNumCells
+    
+    // 2 VBO terpadu untuk koordinat dan warna (Node I2)
+    GLuint particleVBO = 0;   // Menampung koordinat X dan Y (SoA concatenated)
+    GLuint colorVBO    = 0;   // Menampung warna R, G, B (SoA concatenated)
+
+    // Grid instanced rendering
+    GLuint gridVAO      = 0;
+    GLuint gridQuadVBO  = 0;   // Static unit quad
+    GLuint gridColorVBO = 0;   // Warna per sel grid
+
+    // Obstacle triangle fan
+    GLuint obstacleVAO       = 0;
+    GLuint obstacleVBO       = 0;
+    int    obstacleVertCount = 0;
+
     GLuint particleShader = 0;
     GLuint gridShader     = 0;
     GLuint obstacleShader = 0;
-    int maxParticles = 0;
-    int fNumCells    = 0;
+
+    int   maxParticles = 0;
+    int   fNumCells    = 0;
+    float simWidth     = 0.0f;
+    float simHeight    = 0.0f;
 };
 
-// renderInit: allocate VAOs, VBOs (GL_DYNAMIC_DRAW), compile shaders
-//   particleVBO and colorVBO must exist before interopInit() in Node I2
-void renderInit(RenderPipeline& rp, int maxParticles, int fNumCells);
+// Inisialisasi: Alokasi VAO, VBO (GL_DYNAMIC_DRAW), compile shader
+void renderInit(RenderPipeline& rp, int maxParticles, int fNumCells,
+                int fNumX, int fNumY, float h);
 
-// renderParticles: glDrawArrays(GL_POINTS, 0, numParticles)
-//   without interop: glBufferSubData positions/colors from host
-//   with interop: skip upload, CUDA already wrote into VBO
+// Menggambar partikel langsung dari memori VBO tanpa pemindahan data ke host
 void renderParticles(RenderPipeline& rp, int numParticles, float pointSizePx);
 
-// renderGrid: upload cellColor[] via glBufferSubData, draw quads per cell
+// Menggambar grid warna
 void renderGrid(RenderPipeline& rp, const float* cellColor, int fNumX, int fNumY, float h);
 
-// renderObstacle: triangle fan via uniform center + radius
+// Menggambar objek penghalang (obstacle)
 void renderObstacle(RenderPipeline& rp, float ox, float oy, float radius);
 
-// renderDestroy: glDeleteBuffers, glDeleteVertexArrays, glDeleteProgram
-//   call before interopDestroy() on shutdown
+// Pembersihan memori OpenGL
 void renderDestroy(RenderPipeline& rp);
