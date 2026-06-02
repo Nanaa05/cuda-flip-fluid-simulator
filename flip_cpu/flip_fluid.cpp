@@ -119,7 +119,7 @@ void FlipFluid::pushParticlesApart(int numIters) {
                 for (int yi = y0; yi <= y1; ++yi) {
                     int cellNr = xi * pNumY + yi;
                     int firstI = firstCellParticle[cellNr];
-                    int lastI  = firstCellParticle[cellNr + 1];
+                    int lastI = firstCellParticle[cellNr + 1];
                     for (int j = firstI; j < lastI; ++j) {
                         int idn = cellParticleIds[j];
                         if (idn == i) continue;
@@ -134,23 +134,23 @@ void FlipFluid::pushParticlesApart(int numIters) {
                         float sFac = 0.5f * (minDist - d) / d;
                         dx *= sFac;
                         dy *= sFac;
-                        particlePosX[i]   -= dx;
-                        particlePosY[i]   -= dy;
+                        particlePosX[i] -= dx;
+                        particlePosY[i] -= dy;
                         particlePosX[idn] += dx;
                         particlePosY[idn] += dy;
 
                         // diffuse colours
-                        float c0r = particleColorR[i],  c1r = particleColorR[idn];
-                        float c0g = particleColorG[i],  c1g = particleColorG[idn];
-                        float c0b = particleColorB[i],  c1b = particleColorB[idn];
+                        float c0r = particleColorR[i], c1r = particleColorR[idn];
+                        float c0g = particleColorG[i], c1g = particleColorG[idn];
+                        float c0b = particleColorB[i], c1b = particleColorB[idn];
                         float cr = (c0r + c1r) * 0.5f;
                         float cg = (c0g + c1g) * 0.5f;
                         float cb = (c0b + c1b) * 0.5f;
-                        particleColorR[i]   = c0r + (cr - c0r) * colorDiffusionCoeff;
+                        particleColorR[i] = c0r + (cr - c0r) * colorDiffusionCoeff;
                         particleColorR[idn] = c1r + (cr - c1r) * colorDiffusionCoeff;
-                        particleColorG[i]   = c0g + (cg - c0g) * colorDiffusionCoeff;
+                        particleColorG[i] = c0g + (cg - c0g) * colorDiffusionCoeff;
                         particleColorG[idn] = c1g + (cg - c1g) * colorDiffusionCoeff;
-                        particleColorB[i]   = c0b + (cb - c0b) * colorDiffusionCoeff;
+                        particleColorB[i] = c0b + (cb - c0b) * colorDiffusionCoeff;
                         particleColorB[idn] = c1b + (cb - c1b) * colorDiffusionCoeff;
 
                         // refresh cached px/py for next neighbour
@@ -274,9 +274,9 @@ void FlipFluid::p2gComponent(int component) {
     float h1 = fInvSpacing;
     float h2 = 0.5f * h;
     float dxOff = (component == 0) ? 0.0f : h2;
-    float dyOff = (component == 0) ? h2   : 0.0f;
+    float dyOff = (component == 0) ? h2 : 0.0f;
 
-    auto* fld  = (component == 0) ? u.data()  : v.data();
+    auto* fld = (component == 0) ? u.data() : v.data();
     auto* fldD = (component == 0) ? du.data() : dv.data();
 
     for (int i = 0; i < numParticles; ++i) {
@@ -344,11 +344,11 @@ void FlipFluid::g2pComponent(int component, float flipRatio) {
     float h1 = fInvSpacing;
     float h2 = 0.5f * h;
     float dxOff = (component == 0) ? 0.0f : h2;
-    float dyOff = (component == 0) ? h2   : 0.0f;
+    float dyOff = (component == 0) ? h2 : 0.0f;
     int offset = (component == 0) ? n : 1;
 
-    const float* fld  = (component == 0) ? u.data()      : v.data();
-    const float* pfld = (component == 0) ? prevU.data()  : prevV.data();
+    const float* fld = (component == 0) ? u.data() : v.data();
+    const float* pfld = (component == 0) ? prevU.data() : prevV.data();
 
     for (int i = 0; i < numParticles; ++i) {
         float x = particlePosX[i];
@@ -398,7 +398,7 @@ void FlipFluid::g2pComponent(int component, float flipRatio) {
 
             float blended = (1.0f - flipRatio) * picV + flipRatio * flipV;
             if (component == 0) particleVelX[i] = blended;
-            else                particleVelY[i] = blended;
+            else particleVelY[i] = blended;
         }
     }
 }
@@ -431,7 +431,7 @@ void FlipFluid::solveIncompressibility(int numIters, float dt,
     int n = fNumY;
     float cp = density * h / dt;
     float rest = particleRestDensity;
-    int   cd = compensateDrift ? 1 : 0;
+    int cd = compensateDrift ? 1 : 0;
 
     for (int iter = 0; iter < numIters; ++iter) {
         // Gauss-Seidel sweep matching the JS ordering exactly: i in [1, fNumX-1),
@@ -441,10 +441,10 @@ void FlipFluid::solveIncompressibility(int numIters, float dt,
                 if (cellType[i * n + j] != FLUID_CELL) continue;
 
                 int center = i * n + j;
-                int left   = (i - 1) * n + j;
-                int right  = (i + 1) * n + j;
+                int left = (i - 1) * n + j;
+                int right = (i + 1) * n + j;
                 int bottom = i * n + j - 1;
-                int top    = i * n + j + 1;
+                int top = i * n + j + 1;
 
                 float sx0 = s[left];
                 float sx1 = s[right];
@@ -467,9 +467,9 @@ void FlipFluid::solveIncompressibility(int numIters, float dt,
                 p[center] += cp * pVal;
 
                 u[center] -= sx0 * pVal;
-                u[right]  += sx1 * pVal;
+                u[right] += sx1 * pVal;
                 v[center] -= sy0 * pVal;
-                v[top]    += sy1 * pVal;
+                v[top] += sy1 * pVal;
             }
         }
     }
@@ -505,18 +505,18 @@ void FlipFluid::setSciColor(int cellNr, float val, float minVal, float maxVal) {
     val = std::min(std::max(val, minVal), maxVal - 0.0001f);
     float d = maxVal - minVal;
     if (d == 0.0f) val = 0.5f;
-    else           val = (val - minVal) / d;
+    else val = (val - minVal) / d;
     float m = 0.25f;
     int num = int(std::floor(val / m));
     float sLoc = (val - num * m) / m;
     float r = 0, g = 0, b = 0;
     switch (num) {
-        case 0: r = 0.0f;     g = sLoc;        b = 1.0f;        break;
-        case 1: r = 0.0f;     g = 1.0f;        b = 1.0f - sLoc; break;
-        case 2: r = sLoc;     g = 1.0f;        b = 0.0f;        break;
-        default: r = 1.0f;    g = 1.0f - sLoc; b = 0.0f;        break;
+        case 0: r = 0.0f; g = sLoc; b = 1.0f; break;
+        case 1: r = 0.0f; g = 1.0f; b = 1.0f - sLoc; break;
+        case 2: r = sLoc; g = 1.0f; b = 0.0f; break;
+        default: r = 1.0f; g = 1.0f - sLoc; b = 0.0f; break;
     }
-    cellColor[3 * cellNr]     = r;
+    cellColor[3 * cellNr] = r;
     cellColor[3 * cellNr + 1] = g;
     cellColor[3 * cellNr + 2] = b;
 }
@@ -526,7 +526,7 @@ void FlipFluid::updateCellColors() {
 
     for (int i = 0; i < fNumCells; ++i) {
         if (cellType[i] == SOLID_CELL) {
-            cellColor[3 * i]     = 0.5f;
+            cellColor[3 * i] = 0.5f;
             cellColor[3 * i + 1] = 0.5f;
             cellColor[3 * i + 2] = 0.5f;
         } else if (cellType[i] == FLUID_CELL) {

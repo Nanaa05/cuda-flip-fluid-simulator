@@ -1,9 +1,9 @@
 import re
+import os
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import numpy as np
 
-import os
 os.makedirs("output", exist_ok=True)
 LOG_FILE = "output/benchmark_results.log"
 
@@ -41,19 +41,18 @@ stage_labels = ['T1\nIntegrate','T2\nPush Apart','T3\nCollision','T4\nP2G','T5\n
 fig, axes = plt.subplots(1, 2, figsize=(16, 6))
 fig.suptitle('CPU vs CUDA FLIP Benchmark Analysis', fontsize=14, fontweight='bold')
 
-# --- Plot 1: T_total log-scale ---
 ax1 = axes[0]
-cpu_totals    = [cpu[r]['T_total'] for r in resolutions]
-cuda_totals   = [cuda[r]['T_total'] for r in resolutions]
+cpu_totals     = [cpu[r]['T_total'] for r in resolutions]
+cuda_totals    = [cuda[r]['T_total'] for r in resolutions]
 cuda_ni_totals = [cuda_ni[r]['T_total'] for r in resolutions]
 
-ax1.plot(resolutions, cpu_totals,    'o-', color='#e74c3c', linewidth=2, markersize=7, label='CPU')
-ax1.plot(resolutions, cuda_totals,   's-', color='#2ecc71', linewidth=2, markersize=7, label='CUDA + interop')
-ax1.plot(resolutions, cuda_ni_totals,'D-', color='#3498db', linewidth=2, markersize=7, label='CUDA no-interop')
+ax1.plot(resolutions, cpu_totals,     'o-', color='#e74c3c', linewidth=2, markersize=7, label='CPU')
+ax1.plot(resolutions, cuda_totals,    's-', color='#2ecc71', linewidth=2, markersize=7, label='CUDA + interop')
+ax1.plot(resolutions, cuda_ni_totals, 'D-', color='#3498db', linewidth=2, markersize=7, label='CUDA no-interop')
 
 ax1.set_yscale('log')
 ax1.set_xlabel('Resolution', fontsize=11)
-ax1.set_ylabel('T_total (ms) — log scale', fontsize=11)
+ax1.set_ylabel('T_total (ms, log scale)', fontsize=11)
 ax1.set_title('T_total vs Resolution', fontsize=12)
 ax1.set_xticks(resolutions)
 ax1.yaxis.set_major_formatter(ticker.FuncFormatter(lambda x, _: f'{x:.1f}'))
@@ -65,7 +64,6 @@ for r, yc, yd in zip(resolutions, cpu_totals, cuda_totals):
     ax1.annotate(f'{speedup:.1f}x', xy=(r, yd), xytext=(4, 6),
                  textcoords='offset points', fontsize=8, color='#27ae60')
 
-# --- Plot 2: Speedup per stage (res=200) ---
 ax2 = axes[1]
 r = 200
 speedups = [cpu[r][s] / cuda[r][s] if cuda[r][s] > 0 else 0 for s in stages]
@@ -88,7 +86,6 @@ out = "output/benchmark_analysis.png"
 plt.savefig(out, dpi=150, bbox_inches='tight')
 print(f"Saved: {out}")
 
-# --- Print speedup table ---
 print("\nSpeedup Table (CPU / CUDA) per Stage")
 print(f"{'Res':>5} | " + " | ".join(f"{s:>6}" for s in stages) + " | T_total")
 print("-" * 80)

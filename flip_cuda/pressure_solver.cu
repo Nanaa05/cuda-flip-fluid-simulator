@@ -2,7 +2,7 @@
 #include "device_data.cuh"
 #include <device_launch_parameters.h>
 
-// === pressureSolve_kernel: red-black SOR, parity 0=RED parity 1=BLACK ===
+// === pressureSolve_kernel ===
 __global__ void pressureSolve_kernel(
     int parity,
     float* u, float* v, float* p, const float* s,
@@ -52,7 +52,7 @@ __global__ void pressureSolve_kernel(
     v[top] += sTop * pVal;
 }
 
-// === launchRedBlackSolver: numIters full red+black passes ===
+// === launchRedBlackSolver ===
 void launchRedBlackSolver(DeviceData& d, int numIters, float dt,
                           float overRelaxation, bool compensateDrift,
                           float restDensity)

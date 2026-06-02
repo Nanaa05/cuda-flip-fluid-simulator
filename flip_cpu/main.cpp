@@ -21,27 +21,27 @@ using namespace flipcpu;
 
 // --------------------------- scene / config ---------------------------------
 struct Scene {
-    float gravity         = -9.81f;
-    float dt              = 1.0f / 60.0f;
-    float flipRatio       = 0.9f;
-    int   numPressureIters= 50;
-    int   numParticleIters= 2;
-    long  frameNr         = 0;
-    float overRelaxation  = 1.9f;
-    bool  compensateDrift = true;
-    bool  separateParticles = true;
-    float obstacleX       = 3.0f;
-    float obstacleY       = 2.0f;
-    float obstacleRadius  = 0.15f;
-    bool  paused          = true;
-    bool  showObstacle    = true;
-    float obstacleVelX    = 0.0f;
-    float obstacleVelY    = 0.0f;
-    bool  showParticles   = true;
-    bool  showGrid        = false;
-    int   resolution      = 100;
-    int   numSubSteps     = 1;
-    FlipFluid* fluid      = nullptr;
+    float gravity = -9.81f;
+    float dt = 1.0f / 60.0f;
+    float flipRatio = 0.9f;
+    int numPressureIters= 50;
+    int numParticleIters= 2;
+    long frameNr = 0;
+    float overRelaxation = 1.9f;
+    bool compensateDrift = true;
+    bool separateParticles = true;
+    float obstacleX = 3.0f;
+    float obstacleY = 2.0f;
+    float obstacleRadius = 0.15f;
+    bool paused = true;
+    bool showObstacle = true;
+    float obstacleVelX = 0.0f;
+    float obstacleVelY = 0.0f;
+    bool showParticles = true;
+    bool showGrid = false;
+    int resolution = 100;
+    int numSubSteps = 1;
+    FlipFluid* fluid = nullptr;
 };
 
 static Scene scene;
@@ -62,10 +62,10 @@ static void carveObstacle(FlipFluid& f, float x, float y, float r, float vx, flo
             float dy = (j + 0.5f) * f.h - y;
             if (dx * dx + dy * dy < r * r) {
                 f.s[i * n + j] = 0.0f;
-                f.u[i * n + j]       = vx;
+                f.u[i * n + j] = vx;
                 f.u[(i + 1) * n + j] = vx;
-                f.v[i * n + j]       = vy;
-                f.v[i * n + j + 1]   = vy;
+                f.v[i * n + j] = vy;
+                f.v[i * n + j + 1] = vy;
             }
         }
     }
@@ -80,9 +80,9 @@ static void setObstacle(float x, float y, bool reset) {
     scene.obstacleX = x;
     scene.obstacleY = y;
     carveObstacle(*scene.fluid, x, y, scene.obstacleRadius, vx, vy);
-    scene.showObstacle  = true;
-    scene.obstacleVelX  = vx;
-    scene.obstacleVelY  = vy;
+    scene.showObstacle = true;
+    scene.obstacleVelX = vx;
+    scene.obstacleVelY = vy;
 }
 
 static void seedParticles(FlipFluid& f, int numX, int numY, float h, float r, float dx, float dy) {
@@ -108,29 +108,29 @@ static void setupTank(FlipFluid& f) {
 }
 
 static void setupScene() {
-    scene.obstacleRadius   = 0.15f;
-    scene.overRelaxation   = 1.9f;
-    scene.dt               = 1.0f / 60.0f;
+    scene.obstacleRadius = 0.15f;
+    scene.overRelaxation = 1.9f;
+    scene.dt = 1.0f / 60.0f;
     scene.numParticleIters = 2;
 
     int res = scene.resolution;
-    if      (res <= 100) scene.numSubSteps = 1;
+    if (res <= 100) scene.numSubSteps = 1;
     else if (res <= 140) scene.numSubSteps = 2;
     else if (res <= 180) scene.numSubSteps = 3;
-    else                 scene.numSubSteps = 4;
+    else scene.numSubSteps = 4;
     scene.numPressureIters = 50 + std::max(0, (res - 100)) / 2;
 
     float tankHeight = 1.0f * simHeight;
-    float tankWidth  = 1.0f * simWidth;
-    float h          = tankHeight / res;
-    float density    = 1000.0f;
+    float tankWidth = 1.0f * simWidth;
+    float h = tankHeight / res;
+    float density = 1000.0f;
     float relWaterHeight = 0.8f;
-    float relWaterWidth  = 0.6f;
-    float r  = 0.3f * h;
+    float relWaterWidth = 0.6f;
+    float r = 0.3f * h;
     float dx = 2.0f * r;
     float dy = std::sqrt(3.0f) / 2.0f * dx;
 
-    int numX = int(std::floor((relWaterWidth  * tankWidth  - 2.0f * h - 2.0f * r) / dx));
+    int numX = int(std::floor((relWaterWidth * tankWidth - 2.0f * h - 2.0f * r) / dx));
     int numY = int(std::floor((relWaterHeight * tankHeight - 2.0f * h - 2.0f * r) / dy));
     if (numX < 1) numX = 1;
     if (numY < 1) numY = 1;
@@ -203,7 +203,7 @@ static bool createWindow(AppWindow& w, const char* title) {
 static void destroyWindow(AppWindow& w) {
     if (w.glc) { glXMakeCurrent(w.dpy, None, nullptr); glXDestroyContext(w.dpy, w.glc); }
     if (w.xwin) XDestroyWindow(w.dpy, w.xwin);
-    if (w.dpy)  XCloseDisplay(w.dpy);
+    if (w.dpy) XCloseDisplay(w.dpy);
 }
 
 // --------------------------- rendering --------------------------------------
@@ -299,13 +299,13 @@ int main(int argc, char** argv) {
     bool mouseDownPrev = false;
     float mouseSimX = 0.0f, mouseSimY = 0.0f;
     bool mouseDown = false;
-    int  mousePxX = 0, mousePxY = 0;
+    int mousePxX = 0, mousePxY = 0;
     bool mousePressedEdge = false;
     bool mouseReleasedEdge = false;
     bool dragOwnedByUI = false;
 
     auto fpsT0 = std::chrono::steady_clock::now();
-    int  fpsFrames = 0;
+    int fpsFrames = 0;
     char fpsStr[64] = "...";
     double lastFps = 0.0;
     bool gravityOn = (scene.gravity != 0.0f);
@@ -325,7 +325,7 @@ int main(int argc, char** argv) {
             if (e.type == ClientMessage) {
                 if ((Atom)e.xclient.data.l[0] == w.wm_delete) w.running = false;
             } else if (e.type == ConfigureNotify) {
-                w.width  = e.xconfigure.width;
+                w.width = e.xconfigure.width;
                 w.height = e.xconfigure.height;
             } else if (e.type == KeyPress) {
                 KeySym ks = XLookupKeysym(&e.xkey, 0);
@@ -341,14 +341,14 @@ int main(int argc, char** argv) {
             } else if (e.type == ButtonPress && e.xbutton.button == Button1) {
                 mouseDown = true; mousePressedEdge = true;
                 mousePxX = e.xbutton.x; mousePxY = e.xbutton.y;
-                mouseSimX = float(e.xbutton.x) / w.width  * simWidth;
+                mouseSimX = float(e.xbutton.x) / w.width * simWidth;
                 mouseSimY = (1.0f - float(e.xbutton.y) / w.height) * simHeight;
             } else if (e.type == ButtonRelease && e.xbutton.button == Button1) {
                 mouseDown = false; mouseReleasedEdge = true;
                 mousePxX = e.xbutton.x; mousePxY = e.xbutton.y;
             } else if (e.type == MotionNotify) {
                 mousePxX = e.xmotion.x; mousePxY = e.xmotion.y;
-                mouseSimX = float(e.xmotion.x) / w.width  * simWidth;
+                mouseSimX = float(e.xmotion.x) / w.width * simWidth;
                 mouseSimY = (1.0f - float(e.xmotion.y) / w.height) * simHeight;
             }
         }
@@ -399,15 +399,15 @@ int main(int argc, char** argv) {
         glClear(GL_COLOR_BUFFER_BIT);
         setProjection(w.width, w.height);
 
-        if (scene.showGrid)      drawGrid(f);
+        if (scene.showGrid) drawGrid(f);
         if (scene.showParticles) drawParticles(f, w.height);
-        if (scene.showObstacle)  drawObstacle(f, scene.obstacleX, scene.obstacleY, scene.obstacleRadius);
+        if (scene.showObstacle) drawObstacle(f, scene.obstacleX, scene.obstacleY, scene.obstacleRadius);
 
         flipcpu_ui::setProjectionToPixels(w.width, w.height);
         flipcpu_ui::Input uin;
         uin.screenW = w.width; uin.screenH = w.height;
-        uin.mouseX  = mousePxX; uin.mouseY  = mousePxY;
-        uin.mouseDown    = mouseDown;
+        uin.mouseX = mousePxX; uin.mouseY = mousePxY;
+        uin.mouseDown = mouseDown;
         uin.mousePressed = mousePressedEdge && mouseOnPanel;
         uin.mouseReleased = mouseReleasedEdge;
         flipcpu_ui::begin(uin);
@@ -415,9 +415,9 @@ int main(int argc, char** argv) {
         flipcpu_ui::text("FPS: %.1f", lastFps);
         flipcpu_ui::text("Particles: %d", f.numParticles);
         flipcpu_ui::text("Frame: %ld", scene.frameNr);
-        flipcpu_ui::checkbox("Particles",           &scene.showParticles);
-        flipcpu_ui::checkbox("Grid",                &scene.showGrid);
-        flipcpu_ui::checkbox("Compensate Drift",    &scene.compensateDrift);
+        flipcpu_ui::checkbox("Particles", &scene.showParticles);
+        flipcpu_ui::checkbox("Grid", &scene.showGrid);
+        flipcpu_ui::checkbox("Compensate Drift", &scene.compensateDrift);
         flipcpu_ui::checkbox("Separate Particles", &scene.separateParticles);
         if (flipcpu_ui::checkbox("Gravity", &gravityOn)) {
             scene.gravity = gravityOn ? -9.81f : 0.0f;

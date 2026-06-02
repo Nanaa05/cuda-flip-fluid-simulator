@@ -11,7 +11,7 @@ __device__ inline int clampi_d(int x, int lo, int hi) {
     return max(lo, min(hi, x));
 }
 
-// === histogram_kernel: count particles per spatial hash cell ===
+// === histogram_kernel ===
 __global__ void histogram_kernel(
     float* posX, float* posY, int* numCellParticles, int numParticles)
 {
@@ -22,7 +22,7 @@ __global__ void histogram_kernel(
     atomicAdd(&numCellParticles[xi * d_params.pNumY + yi], 1);
 }
 
-// === scatter_kernel: assign particle IDs into sorted cell slots ===
+// === scatter_kernel ===
 __global__ void scatter_kernel(
     float* posX, float* posY,
     int* firstCellParticle_copy, int* cellParticleIds,
@@ -37,7 +37,7 @@ __global__ void scatter_kernel(
     cellParticleIds[slot] = i;
 }
 
-// === separate_kernel: push overlapping particles apart, diffuse colors ===
+// === separate_kernel ===
 __global__ void separate_kernel(
     const float* posInX, const float* posInY,
     float* posOutX, float* posOutY,
@@ -104,7 +104,7 @@ __global__ void separate_kernel(
     colorB[i] = cb;
 }
 
-// === launchPushParticlesApart: rebuild spatial hash each iter, run separate_kernel ===
+// === launchPushParticlesApart ===
 void launchPushParticlesApart(DeviceData& d, int numParticles, int numIters, void* cub_temp, size_t cub_temp_bytes) {
     if (numParticles <= 0) return;
 

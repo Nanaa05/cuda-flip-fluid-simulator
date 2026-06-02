@@ -109,8 +109,8 @@ void main() {
 
 static void buildOrtho(float* m, float w, float h) {
     memset(m, 0, 16 * sizeof(float));
-    m[0]  = 2.0f / w;
-    m[5]  = 2.0f / h;
+    m[0] = 2.0f / w;
+    m[5] = 2.0f / h;
     m[10] = -1.0f;
     m[12] = -1.0f;
     m[13] = -1.0f;
@@ -157,8 +157,8 @@ void renderInit(RenderPipeline& rp, int maxParticles, int fNumCells,
     glBindVertexArray(0);
 
     static const float quadVerts[12] = {
-        0.0f, 0.0f,  1.0f, 0.0f,  1.0f, 1.0f,
-        0.0f, 0.0f,  1.0f, 1.0f,  0.0f, 1.0f
+        0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+        0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f
     };
 
     glGenVertexArrays(1, &rp.gridVAO);

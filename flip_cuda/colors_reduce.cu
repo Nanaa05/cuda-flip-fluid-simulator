@@ -4,7 +4,7 @@
 #include <cuda_runtime.h>
 #include <vector>
 
-// === setSciColor_d: map density value to jet colormap, write to cellColor ===
+// === setSciColor_d ===
 __device__ void setSciColor_d(float* cellColor, int cellNr, float val, float minVal, float maxVal) {
     float v = fmaxf(minVal, fminf(maxVal, val));
     float dv = maxVal - minVal;
@@ -29,7 +29,7 @@ __device__ void setSciColor_d(float* cellColor, int cellNr, float val, float min
     cellColor[3 * cellNr + 2] = b;
 }
 
-// === computeRestDensity_kernel: parallel reduction over fluid cells ===
+// === computeRestDensity_kernel ===
 __global__ void computeRestDensity_kernel(
     const float* particleDensity, const int* cellType,
     float* d_partialSums, int* d_fluidCount, int fNumCells)
@@ -63,7 +63,7 @@ __global__ void computeRestDensity_kernel(
     }
 }
 
-// === updateParticleColors_kernel: drift colors, mark low-density particles white-blue ===
+// === updateParticleColors_kernel ===
 __global__ void updateParticleColors_kernel(
     float* colorR, float* colorG, float* colorB,
     const float* posX, const float* posY, const float* particleDensity,
@@ -89,7 +89,7 @@ __global__ void updateParticleColors_kernel(
     }
 }
 
-// === updateCellColors_kernel: solid=gray, fluid=jet(density), air=black ===
+// === updateCellColors_kernel ===
 __global__ void updateCellColors_kernel(
     float* cellColor, const int* cellType,
     const float* particleDensity, float restDensity, int fNumCells)
@@ -111,7 +111,7 @@ __global__ void updateCellColors_kernel(
     }
 }
 
-// === launchComputeRestDensity: block-level reduction, returns average fluid density ===
+// === launchComputeRestDensity ===
 float launchComputeRestDensity(DeviceData& d, int fNumCells) {
     int threadsPerBlock = 256;
     int blocksPerGrid = (fNumCells + threadsPerBlock - 1) / threadsPerBlock;

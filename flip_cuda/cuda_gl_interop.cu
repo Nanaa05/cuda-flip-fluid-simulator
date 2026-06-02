@@ -5,7 +5,7 @@
 #include <cstdio>
 #include <cstdlib>
 
-// === interopInit: register particleVBO and colorVBO with CUDA ===
+// === interopInit ===
 void interopInit(DeviceData& d, const RenderPipeline& rp) {
     cudaError_t e1 = cudaGraphicsGLRegisterBuffer(&d.vbo_pos_resource, rp.particleVBO,
                                                    cudaGraphicsRegisterFlagsNone);
@@ -18,7 +18,7 @@ void interopInit(DeviceData& d, const RenderPipeline& rp) {
     }
 }
 
-// === interopMapResources: map VBOs, set posX/Y and colorR/G/B device pointers ===
+// === interopMapResources ===
 void interopMapResources(DeviceData& d) {
     cudaGraphicsResource_t res[2] = { d.vbo_pos_resource, d.vbo_col_resource };
     cudaGraphicsMapResources(2, res, 0);
@@ -35,14 +35,14 @@ void interopMapResources(DeviceData& d) {
     d.colorB = ptr + 2 * d.maxParticles;
 }
 
-// === interopUnmapResources: release VBOs back to OpenGL, null the pointers ===
+// === interopUnmapResources ===
 void interopUnmapResources(DeviceData& d) {
     cudaGraphicsResource_t res[2] = { d.vbo_pos_resource, d.vbo_col_resource };
     cudaGraphicsUnmapResources(2, res, 0);
     d.posX = d.posY = d.colorR = d.colorG = d.colorB = nullptr;
 }
 
-// === interopDestroy: unregister both CUDA graphics resources ===
+// === interopDestroy ===
 void interopDestroy(DeviceData& d) {
     if (d.vbo_pos_resource) cudaGraphicsUnregisterResource(d.vbo_pos_resource);
     if (d.vbo_col_resource) cudaGraphicsUnregisterResource(d.vbo_col_resource);

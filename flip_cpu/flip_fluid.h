@@ -26,25 +26,25 @@ constexpr int U_FIELD = 0;
 constexpr int V_FIELD = 1;
 
 constexpr int FLUID_CELL = 0;
-constexpr int AIR_CELL   = 1;
+constexpr int AIR_CELL = 1;
 constexpr int SOLID_CELL = 2;
 
 class FlipFluid {
 public:
     // Grid
     float density;
-    int   fNumX;
-    int   fNumY;
+    int fNumX;
+    int fNumY;
     float h;
     float fInvSpacing;
-    int   fNumCells;
+    int fNumCells;
 
     std::vector<float> u, v, du, dv, prevU, prevV, p, s;
-    std::vector<int>   cellType;
-    std::vector<float> cellColor;        // 3 * fNumCells
+    std::vector<int> cellType;
+    std::vector<float> cellColor; // 3 * fNumCells
 
     // Particles
-    int   maxParticles;
+    int maxParticles;
     std::vector<float> particlePosX, particlePosY;
     std::vector<float> particleVelX, particleVelY;
     std::vector<float> particleColorR, particleColorG, particleColorB;
@@ -53,15 +53,15 @@ public:
 
     float particleRadius;
     float pInvSpacing;
-    int   pNumX;
-    int   pNumY;
-    int   pNumCells;
+    int pNumX;
+    int pNumY;
+    int pNumCells;
 
     std::vector<int> numCellParticles;
-    std::vector<int> firstCellParticle;   // pNumCells + 1
-    std::vector<int> cellParticleIds;     // maxParticles
+    std::vector<int> firstCellParticle; // pNumCells + 1
+    std::vector<int> cellParticleIds; // maxParticles
 
-    int  numParticles = 0;
+    int numParticles = 0;
 
     FlipFluid(float density, float width, float height,
               float spacing, float particle_radius, int max_particles);

@@ -26,7 +26,7 @@ GpuTelemetry g_gpu_telemetry;
 static cudaEvent_t ev_start = nullptr;
 static cudaEvent_t ev_stop = nullptr;
 
-// === carveObstacle_kernel: rasterize moving obstacle into s[], u[], v[] ===
+// === carveObstacle_kernel ===
 __global__ void carveObstacle_kernel(
     float* s, float* u, float* v,
     float obsX, float obsY, float obsRadius,
@@ -55,7 +55,7 @@ __global__ void carveObstacle_kernel(
     }
 }
 
-// === gpuSimulate: full FLIP pipeline per substep ===
+// === gpuSimulate ===
 void gpuSimulate(DeviceData& d, int numParticles, float dt, float gravity, float flipRatio,
                  int numPressureIters, int numParticleIters,
                  float overRelaxation, bool compensateDrift,
@@ -185,7 +185,7 @@ void gpuSimulate(DeviceData& d, int numParticles, float dt, float gravity, float
     g_gpu_telemetry.t8 += ms;
 }
 
-// === gpuUpdateColors: T8 update particle/cell colors using frozen rest density ===
+// === gpuUpdateColors ===
 void gpuUpdateColors(DeviceData& d, int numParticles) {
     SimParams params;
     cudaMemcpyFromSymbol(&params, d_params, sizeof(SimParams), 0, cudaMemcpyDeviceToHost);

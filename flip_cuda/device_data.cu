@@ -64,7 +64,7 @@ void DeviceData::free() {
     sepPosX = sepPosY = nullptr;
 }
 
-// === DeviceData::reset: map interop VBOs, copy initial positions and colors, unmap ===
+// === DeviceData::reset ===
 void DeviceData::reset(const float* hPosX, const float* hPosY,
                        const float* hS, int numParticles, int fNumCells_) {
     cudaGraphicsResource_t resources[2] = { vbo_pos_resource, vbo_col_resource };

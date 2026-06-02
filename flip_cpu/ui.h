@@ -7,12 +7,12 @@
 namespace flipcpu_ui {
 
 struct Input {
-    int  screenW    = 0;
-    int  screenH    = 0;
-    int  mouseX     = 0;     // screen pixels, y-down
-    int  mouseY     = 0;
-    bool mouseDown  = false; // current state (LMB)
-    bool mousePressed  = false; // edge: pressed this frame
+    int screenW = 0;
+    int screenH = 0;
+    int mouseX = 0;     // screen pixels, y-down
+    int mouseY = 0;
+    bool mouseDown = false; // current state (LMB)
+    bool mousePressed = false; // edge: pressed this frame
     bool mouseReleased = false; // edge: released this frame
 };
 
@@ -29,10 +29,10 @@ void beginPanel(int x, int y, int w, int h, const char* title);
 void endPanel();
 
 // Widgets — all calls advance the panel cursor vertically.
-void  text   (const char* fmt, ...);
-bool  checkbox(const char* label, bool* value);
-bool  slider (const char* label, float* value, float lo, float hi);
-bool  button (const char* label);
+void text(const char* fmt, ...);
+bool checkbox(const char* label, bool* value);
+bool slider(const char* label, float* value, float lo, float hi);
+bool button(const char* label);
 
 // True if the mouse is currently inside any UI region (suppress sim input).
 bool wantsMouse();

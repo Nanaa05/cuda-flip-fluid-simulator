@@ -119,24 +119,24 @@ static const unsigned char font8x8[128][8] = {
 };
 
 // ---------- state -----------------------------------------------------------
-static constexpr int kCharScale  = 1;     // pixel size of each font pixel (was 2)
-static constexpr int kCharW      = 8 * kCharScale;
-static constexpr int kCharH      = 8 * kCharScale;
-static constexpr int kRowH       = kCharH + 4;
-static constexpr int kPadX       = 6;
-static constexpr int kTitleH     = kCharH + 6;
-static constexpr int kCheckBox   = 10;   // checkbox square
-static constexpr int kSliderTrk  = 4;    // slider track thickness
-static constexpr int kSliderW    = 80;
-static constexpr int kSliderH    = 10;
-static constexpr int kButtonH    = kCharH + 6;
+static constexpr int kCharScale = 1;     // pixel size of each font pixel (was 2)
+static constexpr int kCharW = 8 * kCharScale;
+static constexpr int kCharH = 8 * kCharScale;
+static constexpr int kRowH = kCharH + 4;
+static constexpr int kPadX = 6;
+static constexpr int kTitleH = kCharH + 6;
+static constexpr int kCheckBox = 10;   // checkbox square
+static constexpr int kSliderTrk = 4;    // slider track thickness
+static constexpr int kSliderW = 80;
+static constexpr int kSliderH = 10;
+static constexpr int kButtonH = kCharH + 6;
 
 struct State {
     Input in {};
-    int   panelX = 0, panelY = 0, panelW = 0, panelH = 0;
-    int   cursorY = 0;
-    bool  inPanel = false;
-    bool  wants_mouse = false;
+    int panelX = 0, panelY = 0, panelW = 0, panelH = 0;
+    int cursorY = 0;
+    bool inPanel = false;
+    bool wants_mouse = false;
     // persistent across frames
     const void* activeSliderId = nullptr;
 };
@@ -151,20 +151,20 @@ static inline bool pointInRect(int px, int py, int x, int y, int w, int h) {
 static void fillRect(int x, int y, int w, int h, float r, float g_, float b, float a = 1.0f) {
     glColor4f(r, g_, b, a);
     glBegin(GL_QUADS);
-    glVertex2f((float)x,       (float)y);
+    glVertex2f((float)x, (float)y);
     glVertex2f((float)(x + w), (float)y);
     glVertex2f((float)(x + w), (float)(y + h));
-    glVertex2f((float)x,       (float)(y + h));
+    glVertex2f((float)x, (float)(y + h));
     glEnd();
 }
 
 static void strokeRect(int x, int y, int w, int h, float r, float g_, float b) {
     glColor3f(r, g_, b);
     glBegin(GL_LINE_LOOP);
-    glVertex2f((float)x + 0.5f,       (float)y + 0.5f);
+    glVertex2f((float)x + 0.5f, (float)y + 0.5f);
     glVertex2f((float)(x + w) - 0.5f, (float)y + 0.5f);
     glVertex2f((float)(x + w) - 0.5f, (float)(y + h) - 0.5f);
-    glVertex2f((float)x + 0.5f,       (float)(y + h) - 0.5f);
+    glVertex2f((float)x + 0.5f, (float)(y + h) - 0.5f);
     glEnd();
 }
 
@@ -186,7 +186,7 @@ static void drawText(int x, int y, const char* s, float r, float g_, float b) {
                 for (int col = 0; col < 8; ++col) {
                     if (rowByte & (1u << col)) {
                         float x0 = (float)(px + col * kCharScale);
-                        float y0 = (float)(y  + row * kCharScale);
+                        float y0 = (float)(y + row * kCharScale);
                         float x1 = x0 + kCharScale;
                         float y1 = y0 + kCharScale;
                         glVertex2f(x0, y0);

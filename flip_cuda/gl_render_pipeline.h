@@ -25,18 +25,18 @@ struct RenderPipeline {
     float projMatrix[16];
 };
 
-// === renderInit: allocate VAOs/VBOs, compile shaders, build ortho projection ===
+// === renderInit ===
 void renderInit(RenderPipeline& rp, int maxParticles, int fNumCells,
                 int fNumX, int fNumY, float h);
 
-// === renderParticles: draw GL_POINTS from interop VBOs, no host upload ===
+// === renderParticles ===
 void renderParticles(RenderPipeline& rp, int numParticles, float pointSizePx);
 
-// === renderGrid: upload cellColor RGB host array, instanced quad draw ===
+// === renderGrid ===
 void renderGrid(RenderPipeline& rp, const float* cellColor, int fNumX, int fNumY, float h);
 
-// === renderObstacle: triangle fan scaled by radius at (ox, oy) ===
+// === renderObstacle ===
 void renderObstacle(RenderPipeline& rp, float ox, float oy, float radius);
 
-// === renderDestroy: delete all GL objects ===
+// === renderDestroy ===
 void renderDestroy(RenderPipeline& rp);

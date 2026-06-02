@@ -2,7 +2,7 @@
 #include "device_data.cuh"
 #include <device_launch_parameters.h>
 
-// === integrateParticles_kernel: apply gravity, advance position by dt ===
+// === integrateParticles_kernel ===
 __global__ void integrateParticles_kernel(
     float* posX, float* posY,
     float* velX, float* velY,
@@ -16,7 +16,7 @@ __global__ void integrateParticles_kernel(
     }
 }
 
-// === handleCollisions_kernel: clamp to walls, bounce off obstacle ===
+// === handleCollisions_kernel ===
 __global__ void handleCollisions_kernel(
     float* posX, float* posY,
     float* velX, float* velY,
