@@ -83,6 +83,9 @@ RenderPipeline rp;
 std::vector<float> h_posX;
 std::vector<float> h_posY;
 std::vector<float> h_s;
+std::vector<float> h_colorR;
+std::vector<float> h_colorG;
+std::vector<float> h_colorB;
 int g_numParticles = 0;
 int g_fNumX = 0;
 int g_fNumY = 0;
@@ -187,6 +190,10 @@ static void setupScene() {
         }
     }
     g_numParticles = (int)h_posX.size();
+
+    h_colorR.assign(g_numParticles, 0.0f);
+    h_colorG.assign(g_numParticles, 0.0f);
+    h_colorB.assign(g_numParticles, 1.0f);
 
     d.allocate(g_fNumCells, pNumCells, maxParticles);
     renderInit(rp, maxParticles, g_fNumCells, g_fNumX, g_fNumY, g_h);
@@ -356,6 +363,12 @@ int main(int argc, char** argv) {
             gpuUpdateColors(d, g_numParticles);
             cudaEventRecord(evT8Stop, 0);
 
+            cudaMemcpy(h_posX.data(), d.posX, g_numParticles * sizeof(float), cudaMemcpyDeviceToHost);
+            cudaMemcpy(h_posY.data(), d.posY, g_numParticles * sizeof(float), cudaMemcpyDeviceToHost);
+            cudaMemcpy(h_colorR.data(), d.colorR, g_numParticles * sizeof(float), cudaMemcpyDeviceToHost);
+            cudaMemcpy(h_colorG.data(), d.colorG, g_numParticles * sizeof(float), cudaMemcpyDeviceToHost);
+            cudaMemcpy(h_colorB.data(), d.colorB, g_numParticles * sizeof(float), cudaMemcpyDeviceToHost);
+
             // T10: interop unmap
             cudaEventRecord(evUnmapStart, 0);
             interopUnmapResources(d);
@@ -381,9 +394,32 @@ int main(int argc, char** argv) {
                        g_fNumCells * 3 * sizeof(float), cudaMemcpyDeviceToHost);
             renderGrid(rp, h_cellColor.data(), g_fNumX, g_fNumY, g_h);
         }
-        if (scene.showParticles)
-            renderParticles(rp, g_numParticles,
-                            2.0f * g_h * 0.3f * ((float)w.height / SIM_HEIGHT));
+        if (scene.showParticles && g_numParticles > 0) {
+            glUseProgram(0);
+            glMatrixMode(GL_PROJECTION);
+            glPushMatrix();
+            glLoadIdentity();
+            glOrtho(0.0, rp.simWidth, 0.0, rp.simHeight, -1.0, 1.0);
+            glMatrixMode(GL_MODELVIEW);
+            glPushMatrix();
+            glLoadIdentity();
+
+            float diameterPx = 2.0f * g_h * 0.3f * ((float)w.height / SIM_HEIGHT);
+            if (diameterPx < 1.0f) diameterPx = 1.0f;
+            glDisable(GL_PROGRAM_POINT_SIZE);
+            glPointSize(diameterPx);
+            glBegin(GL_POINTS);
+            for (int i = 0; i < g_numParticles; ++i) {
+                glColor3f(h_colorR[i], h_colorG[i], h_colorB[i]);
+                glVertex2f(h_posX[i], h_posY[i]);
+            }
+            glEnd();
+
+            glMatrixMode(GL_PROJECTION);
+            glPopMatrix();
+            glMatrixMode(GL_MODELVIEW);
+            glPopMatrix();
+        }
         if (scene.showObstacle)
             renderObstacle(rp, scene.obstacleX, scene.obstacleY, scene.obstacleRadius);
 
