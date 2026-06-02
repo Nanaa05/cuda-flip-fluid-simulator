@@ -1,0 +1,8 @@
+inputs:
+  nixpkgs:
+    url: github:cachix/devenv-nixpkgs/rolling
+
+# This is where the unfree and CUDA flags live
+nixpkgs:
+  allow_unfree: true
+  cuda_support: true

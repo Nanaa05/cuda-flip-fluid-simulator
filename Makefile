@@ -1,7 +1,7 @@
 CXX      ?= g++
-CXXFLAGS ?= -std=c++17 -O3 -ffast-math -Wall -Wextra
+CXXFLAGS ?= -std=c++17 -O3 -ffast-math -Wall -Wextra -mavx2 -mfma -fopenmp
 LDFLAGS  ?=
-LIBS     := -lGL -lGLX -lX11 -lm
+LIBS     := -lGL -lGLX -lX11 -lm -lgomp
 
 SRC := flip_fluid.cpp ui.cpp main.cpp
 OBJ := $(SRC:.cpp=.o)
