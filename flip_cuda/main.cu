@@ -504,11 +504,16 @@ int main(int argc, char** argv) {
                 if (scene.frameNr == 660) {
                     float N = 600.0f;
                     const char* label = g_noInterop ? "[BENCHMARK_CUDA_NOINTEROP_RESULT]" : "[BENCHMARK_CUDA_RESULT]";
+                    float t10Avg = telemetry.t10 / N;
+                    float totalAvg = telemetry.t_total / N;
+                    float interopPct = (totalAvg > 0.0f) ? (t10Avg / totalAvg * 100.0f) : 0.0f;
                     std::printf("%s res=%d T1=%.3fms T2=%.3fms T3=%.3fms T4=%.3fms T5=%.3fms T6=%.3fms T7=%.3fms T8=%.3fms T9=%.3fms T10=%.3fms T_total=%.3fms particles=%d\n",
                                 label,
-                                scene.resolution, g_gpu_telemetry.t1 / N, g_gpu_telemetry.t2 / N, g_gpu_telemetry.t3 / N, 
-                                g_gpu_telemetry.t4 / N, g_gpu_telemetry.t5 / N, g_gpu_telemetry.t6 / N, g_gpu_telemetry.t7 / N, 
-                                g_gpu_telemetry.t8 / N, telemetry.t9 / N, telemetry.t10 / N, telemetry.t_total / N, g_numParticles);
+                                scene.resolution, g_gpu_telemetry.t1 / N, g_gpu_telemetry.t2 / N, g_gpu_telemetry.t3 / N,
+                                g_gpu_telemetry.t4 / N, g_gpu_telemetry.t5 / N, g_gpu_telemetry.t6 / N, g_gpu_telemetry.t7 / N,
+                                g_gpu_telemetry.t8 / N, telemetry.t9 / N, t10Avg, totalAvg, g_numParticles);
+                    std::printf("[T10_OVERHEAD] res=%d T10=%.3fms T_total=%.3fms overhead=%.2f%%\n",
+                                scene.resolution, t10Avg, totalAvg, interopPct);
                     std::fflush(stdout);
                     w.running = false;
                 } else if (scene.frameNr > 60) {
