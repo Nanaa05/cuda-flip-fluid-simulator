@@ -9,30 +9,27 @@ echo "====================================================================" >> "
 
 make validate > /dev/null
 
-echo "===================================================================="
-echo "  LOCKSTEP - Baseline"
-echo "===================================================================="
-./flip_cuda/validate --lockstep 2>&1 | tee -a "$LOG_FILE"
+echo "====================================================================" >> "$LOG_FILE"
+echo "  LOCKSTEP - Baseline" >> "$LOG_FILE"
+echo "====================================================================" >> "$LOG_FILE"
+./flip_cuda/validate --lockstep >> "$LOG_FILE" 2>&1
 
-echo "===================================================================="
-echo "  LOCKSTEP - Pressure Solver Converged (500 iters)"
-echo "===================================================================="
-./flip_cuda/validate --lockstep --iters 500
+echo "====================================================================" >> "$LOG_FILE"
+echo "  LOCKSTEP - Pressure Solver Converged (500 iters)" >> "$LOG_FILE"
+echo "====================================================================" >> "$LOG_FILE"
+./flip_cuda/validate --lockstep --iters 500 >> "$LOG_FILE" 2>&1
 
-echo "===================================================================="
-echo "  LOCKSTEP - No Gravity"
-echo "===================================================================="
-./flip_cuda/validate --lockstep --no-gravity
+echo "====================================================================" >> "$LOG_FILE"
+echo "  LOCKSTEP - No Gravity" >> "$LOG_FILE"
+echo "====================================================================" >> "$LOG_FILE"
+./flip_cuda/validate --lockstep --no-gravity >> "$LOG_FILE" 2>&1
 
-echo "===================================================================="
-echo "  LOCKSTEP - No Obstacle"
-echo "===================================================================="
-./flip_cuda/validate --lockstep --no-obstacle
+echo "====================================================================" >> "$LOG_FILE"
+echo "  LOCKSTEP - No Obstacle" >> "$LOG_FILE"
+echo "====================================================================" >> "$LOG_FILE"
+./flip_cuda/validate --lockstep --no-obstacle >> "$LOG_FILE" 2>&1
 
-echo "===================================================================="
-echo "  LOCKSTEP - No Push-Apart"
-echo "===================================================================="
-./flip_cuda/validate --lockstep --no-separate
-
-echo ""
-echo "Baseline result saved to $LOG_FILE"
+echo "====================================================================" >> "$LOG_FILE"
+echo "  LOCKSTEP - No Push-Apart" >> "$LOG_FILE"
+echo "====================================================================" >> "$LOG_FILE"
+./flip_cuda/validate --lockstep --no-separate >> "$LOG_FILE" 2>&1
