@@ -177,7 +177,6 @@ void gpuSimulate(DeviceData& d, int numParticles, float dt, float gravity, float
 
     // T8: Post-Substep Reductions and Rendering Metadata
     cudaEventRecord(ev_start);
-    cachedRestDensity = launchComputeRestDensity(d, params.fNumCells);
     launchUpdateParticleColors(d, numParticles, cachedRestDensity);
     launchUpdateCellColors(d, params.fNumCells, cachedRestDensity);
     cudaEventRecord(ev_stop);
@@ -186,11 +185,10 @@ void gpuSimulate(DeviceData& d, int numParticles, float dt, float gravity, float
     g_gpu_telemetry.t8 += ms;
 }
 
-// === gpuUpdateColors: T8 recompute rest density and update particle/cell colors ===
+// === gpuUpdateColors: T8 update particle/cell colors using frozen rest density ===
 void gpuUpdateColors(DeviceData& d, int numParticles) {
     SimParams params;
     cudaMemcpyFromSymbol(&params, d_params, sizeof(SimParams), 0, cudaMemcpyDeviceToHost);
-    cachedRestDensity = launchComputeRestDensity(d, params.fNumCells);
     launchUpdateParticleColors(d, numParticles, cachedRestDensity);
     launchUpdateCellColors(d, params.fNumCells, cachedRestDensity);
 }
