@@ -412,6 +412,8 @@ int main(int argc, char** argv) {
             float diameterPx = 2.0f * g_h * 0.3f * ((float)w.height / SIM_HEIGHT);
             if (diameterPx < 1.0f) diameterPx = 1.0f;
             glDisable(GL_PROGRAM_POINT_SIZE);
+            glEnable(GL_POINT_SMOOTH);
+            glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
             glPointSize(diameterPx);
             glBegin(GL_POINTS);
             for (int i = 0; i < g_numParticles; ++i) {
