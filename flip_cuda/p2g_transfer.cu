@@ -2,14 +2,17 @@
 #include "device_data.cuh"
 #include <cuda_runtime.h>
 
+// === clampf_d ===
 static __device__ __forceinline__ float clampf_d(float x, float lo, float hi) {
     return fmaxf(lo, fminf(hi, x));
 }
 
-__global__ void savePrevVelocities_kernel(float* u, float* v,
-                                          float* du, float* dv,
-                                          float* prevU, float* prevV,
-                                          int fNumCells)
+// === savePrevVelocities_kernel ===
+__global__ void savePrevVelocities_kernel(
+    float* u, float* v,
+    float* du, float* dv,
+    float* prevU, float* prevV,
+    int fNumCells)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     if (i >= fNumCells) return;
@@ -21,6 +24,7 @@ __global__ void savePrevVelocities_kernel(float* u, float* v,
     v[i] = 0.0f;
 }
 
+// === classifyCellsA_kernel ===
 __global__ void classifyCellsA_kernel(int* cellType, const float* s, int fNumCells)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -28,10 +32,12 @@ __global__ void classifyCellsA_kernel(int* cellType, const float* s, int fNumCel
     cellType[i] = (s[i] == 0.0f) ? SOLID_CELL : AIR_CELL;
 }
 
-__global__ void classifyCellsB_kernel(int* cellType,
-                                       const float* posX, const float* posY,
-                                       int numParticles,
-                                       float fInvSpacing, int fNumX, int fNumY)
+// === classifyCellsB_kernel ===
+__global__ void classifyCellsB_kernel(
+    int* cellType,
+    const float* posX, const float* posY,
+    int numParticles,
+    float fInvSpacing, int fNumX, int fNumY)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     if (i >= numParticles) return;
@@ -40,12 +46,14 @@ __global__ void classifyCellsB_kernel(int* cellType,
     atomicCAS(&cellType[xi * fNumY + yi], AIR_CELL, FLUID_CELL);
 }
 
-__global__ void p2gScatter_kernel(float* fld, float* fldD,
-                                   const float* posX, const float* posY,
-                                   const float* particleVel,
-                                   int numParticles, int component,
-                                   float h, float fInvSpacing,
-                                   int fNumX, int fNumY)
+// === p2gScatter_kernel ===
+__global__ void p2gScatter_kernel(
+    float* fld, float* fldD,
+    const float* posX, const float* posY,
+    const float* particleVel,
+    int numParticles, int component,
+    float h, float fInvSpacing,
+    int fNumX, int fNumY)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     if (i >= numParticles) return;
@@ -78,12 +86,17 @@ __global__ void p2gScatter_kernel(float* fld, float* fldD,
     int nr3 = x0 * n + y1;
 
     float pv = particleVel[i];
-    atomicAdd(&fld[nr0], pv * d0); atomicAdd(&fldD[nr0], d0);
-    atomicAdd(&fld[nr1], pv * d1); atomicAdd(&fldD[nr1], d1);
-    atomicAdd(&fld[nr2], pv * d2); atomicAdd(&fldD[nr2], d2);
-    atomicAdd(&fld[nr3], pv * d3); atomicAdd(&fldD[nr3], d3);
+    atomicAdd(&fld[nr0], pv * d0);
+    atomicAdd(&fldD[nr0], d0);
+    atomicAdd(&fld[nr1], pv * d1);
+    atomicAdd(&fldD[nr1], d1);
+    atomicAdd(&fld[nr2], pv * d2);
+    atomicAdd(&fldD[nr2], d2);
+    atomicAdd(&fld[nr3], pv * d3);
+    atomicAdd(&fldD[nr3], d3);
 }
 
+// === p2gNormalize_kernel ===
 __global__ void p2gNormalize_kernel(float* fld, const float* fldD, int fNumCells)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -91,10 +104,12 @@ __global__ void p2gNormalize_kernel(float* fld, const float* fldD, int fNumCells
     if (fldD[i] > 0.0f) fld[i] /= fldD[i];
 }
 
-__global__ void restoreSolidCells_kernel(float* u, float* v,
-                                          const float* prevU, const float* prevV,
-                                          const int* cellType,
-                                          int fNumX, int fNumY)
+// === restoreSolidCells_kernel ===
+__global__ void restoreSolidCells_kernel(
+    float* u, float* v,
+    const float* prevU, const float* prevV,
+    const int* cellType,
+    int fNumX, int fNumY)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     int j = blockIdx.y * blockDim.y + threadIdx.y;
@@ -110,11 +125,13 @@ __global__ void restoreSolidCells_kernel(float* u, float* v,
         v[idx] = prevV[idx];
 }
 
-__global__ void updateParticleDensity_kernel(float* particleDensity,
-                                              const float* posX, const float* posY,
-                                              int numParticles,
-                                              float h, float fInvSpacing,
-                                              int fNumX, int fNumY)
+// === updateParticleDensity_kernel ===
+__global__ void updateParticleDensity_kernel(
+    float* particleDensity,
+    const float* posX, const float* posY,
+    int numParticles,
+    float h, float fInvSpacing,
+    int fNumX, int fNumY)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     if (i >= numParticles) return;
@@ -144,33 +161,37 @@ __global__ void updateParticleDensity_kernel(float* particleDensity,
     if (x0 < fNumX && y1 < fNumY) atomicAdd(&particleDensity[x0 * n + y1], sx * ty);
 }
 
+// === launchSavePrevVelocities ===
 void launchSavePrevVelocities(DeviceData& d, int fNumCells)
 {
     savePrevVelocities_kernel<<<(fNumCells + 255) / 256, 256>>>(
         d.u, d.v, d.du, d.dv, d.prevU, d.prevV, fNumCells);
 }
 
+// === launchClassifyCells ===
 void launchClassifyCells(DeviceData& d, int fNumCells, int numParticles,
-                          float fInvSpacing, int fNumX, int fNumY)
+    float fInvSpacing, int fNumX, int fNumY)
 {
     classifyCellsA_kernel<<<(fNumCells + 255) / 256, 256>>>(d.cellType, d.s, fNumCells);
     classifyCellsB_kernel<<<(numParticles + 255) / 256, 256>>>(
         d.cellType, d.posX, d.posY, numParticles, fInvSpacing, fNumX, fNumY);
 }
 
+// === launchP2G ===
 void launchP2G(DeviceData& d, int numParticles, int fNumCells,
-               float h, float fInvSpacing, int fNumX, int fNumY)
+    float h, float fInvSpacing, int fNumX, int fNumY)
 {
     int grid = (numParticles + 255) / 256;
     p2gScatter_kernel<<<grid, 256>>>(d.u, d.du, d.posX, d.posY, d.velX,
-                                      numParticles, 0, h, fInvSpacing, fNumX, fNumY);
+        numParticles, 0, h, fInvSpacing, fNumX, fNumY);
     p2gScatter_kernel<<<grid, 256>>>(d.v, d.dv, d.posX, d.posY, d.velY,
-                                      numParticles, 1, h, fInvSpacing, fNumX, fNumY);
+        numParticles, 1, h, fInvSpacing, fNumX, fNumY);
     int gridC = (fNumCells + 255) / 256;
     p2gNormalize_kernel<<<gridC, 256>>>(d.u, d.du, fNumCells);
     p2gNormalize_kernel<<<gridC, 256>>>(d.v, d.dv, fNumCells);
 }
 
+// === launchRestoreSolidCells ===
 void launchRestoreSolidCells(DeviceData& d, int fNumX, int fNumY)
 {
     dim3 block(16, 16);
@@ -179,8 +200,9 @@ void launchRestoreSolidCells(DeviceData& d, int fNumX, int fNumY)
         d.u, d.v, d.prevU, d.prevV, d.cellType, fNumX, fNumY);
 }
 
+// === launchUpdateParticleDensity ===
 void launchUpdateParticleDensity(DeviceData& d, int numParticles, int fNumCells,
-                                  float h, float fInvSpacing, int fNumX, int fNumY)
+    float h, float fInvSpacing, int fNumX, int fNumY)
 {
     cudaMemset(d.particleDensity, 0, fNumCells * sizeof(float));
     updateParticleDensity_kernel<<<(numParticles + 255) / 256, 256>>>(

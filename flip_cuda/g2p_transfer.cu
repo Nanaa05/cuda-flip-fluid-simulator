@@ -2,16 +2,19 @@
 #include "device_data.cuh"
 #include <cuda_runtime.h>
 
+// === clampf_d ===
 static __device__ __forceinline__ float clampf_d(float x, float lo, float hi) {
     return fmaxf(lo, fminf(hi, x));
 }
 
-__global__ void g2pGather_kernel(float* particleVel,
-                                  const float* posX, const float* posY,
-                                  const float* fld, const float* pfld,
-                                  const int* cellType,
-                                  int numParticles, int component, float flipRatio,
-                                  float h, float fInvSpacing, int fNumX, int fNumY)
+// === g2pGather_kernel ===
+__global__ void g2pGather_kernel(
+    float* particleVel,
+    const float* posX, const float* posY,
+    const float* fld, const float* pfld,
+    const int* cellType,
+    int numParticles, int component, float flipRatio,
+    float h, float fInvSpacing, int fNumX, int fNumY)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     if (i >= numParticles) return;
@@ -63,14 +66,15 @@ __global__ void g2pGather_kernel(float* particleVel,
     }
 }
 
+// === launchG2P ===
 void launchG2P(DeviceData& d, int numParticles, float flipRatio,
-               float h, float fInvSpacing, int fNumX, int fNumY)
+    float h, float fInvSpacing, int fNumX, int fNumY)
 {
     int grid = (numParticles + 255) / 256;
     g2pGather_kernel<<<grid, 256>>>(d.velX, d.posX, d.posY, d.u, d.prevU,
-                                     d.cellType, numParticles, 0, flipRatio,
-                                     h, fInvSpacing, fNumX, fNumY);
+        d.cellType, numParticles, 0, flipRatio,
+        h, fInvSpacing, fNumX, fNumY);
     g2pGather_kernel<<<grid, 256>>>(d.velY, d.posX, d.posY, d.v, d.prevV,
-                                     d.cellType, numParticles, 1, flipRatio,
-                                     h, fInvSpacing, fNumX, fNumY);
+        d.cellType, numParticles, 1, flipRatio,
+        h, fInvSpacing, fNumX, fNumY);
 }

@@ -13,7 +13,7 @@ CXXFLAGS  := -std=c++17 -O3 -ffast-math -Wall -Wextra -mavx2 -mfma -fopenmp
 CPU_LIBS  := -lGL -lGLX -lX11 -lm -lgomp
 
 NVCC      := nvcc
-NVCCFLAGS := -std=c++17 -O3 -arch=$(SM) --use_fast_math
+NVCCFLAGS := -std=c++17 -O3 -arch=$(SM) --use_fast_math -rdc=true
 CUDA_HOME ?= /usr/local/cuda
 CUDA_LIBS := -lGL -lGLX -lX11 -lm -lcudart
 
@@ -34,10 +34,11 @@ CU_SRC  := $(CUD_DIR)/particle_kinematics.cu \
             $(CUD_DIR)/pressure_solver.cu \
             $(CUD_DIR)/colors_reduce.cu \
             $(CUD_DIR)/cuda_gl_interop.cu \
+            $(CUD_DIR)/device_data.cu \
             $(CUD_DIR)/cuda_fluid_simulator.cu \
             $(CUD_DIR)/main.cu
-CPP_SRC := $(CUD_DIR)/gl_render_pipeline.cpp
-CU_OBJ  := $(CU_SRC:.cu=.o)
+CPP_SRC := $(CUD_DIR)/gl_render_pipeline.cpp $(CUD_DIR)/ui.cpp
+CU_OBJ := $(CU_SRC:.cu=.o)
 CPP_OBJ := $(CPP_SRC:.cpp=.o)
 CUD_BIN := $(CUD_DIR)/flip
 
@@ -70,7 +71,7 @@ $(CUD_BIN): $(CU_OBJ) $(CPP_OBJ)
 $(CUD_DIR)/%.o: $(CUD_DIR)/%.cu $(CUD_DIR)/flip_fluid.cuh $(CUD_DIR)/device_data.cuh
 	$(NVCC) $(NVCCFLAGS) -I$(CUDA_HOME)/include -c -o $@ $<
 
-$(CUD_DIR)/%.o: $(CUD_DIR)/%.cpp $(CUD_DIR)/gl_render_pipeline.h
+$(CUD_DIR)/%.o: $(CUD_DIR)/%.cpp
 	$(CXX) -std=c++17 -O3 -ffast-math -I$(CUDA_HOME)/include -c -o $@ $<
 
 run-cpu: cpu

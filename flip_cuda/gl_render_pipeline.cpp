@@ -2,88 +2,83 @@
 #include "gl_render_pipeline.h"
 #include <GL/gl.h>
 #include <GL/glext.h>
-#include <iostream>
-#include <vector>
 #include <cmath>
+#include <cstring>
+#include <cstdio>
+#include <vector>
 
-// Helper untuk mengompilasi shader individu
-static GLuint compileShader(GLenum type, const char* source) {
-    GLuint shader = glCreateShader(type);
-    glShaderSource(shader, 1, &source, nullptr);
-    glCompileShader(shader);
-
-    GLint success;
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        char infoLog[512];
-        glGetShaderInfoLog(shader, 512, nullptr, infoLog);
-        std::cerr << "Shader Compilation Error:\n" << infoLog << std::endl;
+static GLuint compileShader(GLenum type, const char* src) {
+    GLuint sh = glCreateShader(type);
+    glShaderSource(sh, 1, &src, nullptr);
+    glCompileShader(sh);
+    GLint ok;
+    glGetShaderiv(sh, GL_COMPILE_STATUS, &ok);
+    if (!ok) {
+        char log[512];
+        glGetShaderInfoLog(sh, 512, nullptr, log);
+        std::fprintf(stderr, "[GL shader] %s\n", log);
     }
-    return shader;
+    return sh;
 }
 
-// Helper untuk membuat shader program lengkap
-static GLuint createProgram(const char* vShaderCode, const char* fShaderCode) {
-    GLuint vertexShader = compileShader(GL_VERTEX_SHADER, vShaderCode);
-    GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, fShaderCode);
-
-    GLuint program = glCreateProgram();
-    glAttachShader(program, vertexShader);
-    glAttachShader(program, fragmentShader);
-    glLinkProgram(program);
-
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-    return program;
+static GLuint makeProgram(const char* vs, const char* fs) {
+    GLuint v = compileShader(GL_VERTEX_SHADER, vs);
+    GLuint f = compileShader(GL_FRAGMENT_SHADER, fs);
+    GLuint p = glCreateProgram();
+    glAttachShader(p, v);
+    glAttachShader(p, f);
+    glLinkProgram(p);
+    glDeleteShader(v);
+    glDeleteShader(f);
+    return p;
 }
 
-// Shader Source untuk Partikel (SoA Attribute Map menggunakan input skalar)
-const char* particleVert = R"(
+static const char* kParticleVert = R"(
 #version 330 core
-layout (location = 0) in float aPosX;
-layout (location = 1) in float aPosY;
-layout (location = 2) in float aColorR;
-layout (location = 3) in float aColorG;
-layout (location = 4) in float aColorB;
-
-out vec3 particleColor;
+layout(location=0) in float aPosX;
+layout(location=1) in float aPosY;
+layout(location=2) in float aColorR;
+layout(location=3) in float aColorG;
+layout(location=4) in float aColorB;
 uniform mat4 projection;
 uniform float pointSize;
-
+out vec3 fragColor;
 void main() {
-    // Menyusun posisi koordinat dari attribute X dan Y terpisah di VRAM
     gl_Position = projection * vec4(aPosX, aPosY, 0.0, 1.0);
     gl_PointSize = pointSize;
-    particleColor = vec3(aColorR, aColorG, aColorB);
+    fragColor = vec3(aColorR, aColorG, aColorB);
 }
 )";
 
-const char* particleFrag = R"(
+static const char* kParticleFrag = R"(
 #version 330 core
-in vec3 particleColor;
+in vec3 fragColor;
 out vec4 FragColor;
 void main() {
-    // Membentuk titik segiempat default agar bulat sempurna seperti lingkaran sprite
-    vec2 circCoord = 2.0 * gl_PointCoord - 1.0;
-    if (dot(circCoord, circCoord) > 1.0) discard;
-    FragColor = vec4(particleColor, 1.0);
+    vec2 c = 2.0 * gl_PointCoord - 1.0;
+    if (dot(c, c) > 1.0) discard;
+    FragColor = vec4(fragColor, 1.0);
 }
 )";
 
-// Shader Source untuk Rendering Grid dan Obstacle
-const char* basicVert = R"(
+static const char* kGridVert = R"(
 #version 330 core
-layout (location = 0) in vec2 aPos;
-layout (location = 1) in vec3 aColor;
-out vec3 fragColor;
+layout(location=0) in vec2 aQuadPos;
+layout(location=1) in vec3 aColor;
 uniform mat4 projection;
+uniform float h;
+uniform int fNumY;
+out vec3 fragColor;
 void main() {
-    gl_Position = projection * vec4(aPos, 0.0, 1.0);
+    int ix = gl_InstanceID / fNumY;
+    int iy = gl_InstanceID % fNumY;
+    vec2 world = (aQuadPos + vec2(float(ix), float(iy))) * h;
+    gl_Position = projection * vec4(world, 0.0, 1.0);
     fragColor = aColor;
 }
 )";
 
-const char* basicFrag = R"(
+static const char* kGridFrag = R"(
 #version 330 core
 in vec3 fragColor;
 out vec4 FragColor;
@@ -92,217 +87,170 @@ void main() {
 }
 )";
 
-void renderInit(RenderPipeline& rp, int maxParticles, int fNumCells, int fNumX, int fNumY, float h) {
+static const char* kObstacleVert = R"(
+#version 330 core
+layout(location=0) in vec2 aPos;
+uniform mat4 projection;
+uniform vec2 center;
+uniform float radius;
+void main() {
+    vec2 world = center + aPos * radius;
+    gl_Position = projection * vec4(world, 0.0, 1.0);
+}
+)";
+
+static const char* kObstacleFrag = R"(
+#version 330 core
+out vec4 FragColor;
+void main() {
+    FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+}
+)";
+
+static void buildOrtho(float* m, float w, float h) {
+    memset(m, 0, 16 * sizeof(float));
+    m[0]  = 2.0f / w;
+    m[5]  = 2.0f / h;
+    m[10] = -1.0f;
+    m[12] = -1.0f;
+    m[13] = -1.0f;
+    m[15] = 1.0f;
+}
+
+// === renderInit ===
+void renderInit(RenderPipeline& rp, int maxParticles, int fNumCells,
+                int fNumX, int fNumY, float h) {
     rp.maxParticles = maxParticles;
     rp.fNumCells = fNumCells;
+    rp.simWidth = fNumX * h;
+    rp.simHeight = fNumY * h;
+    buildOrtho(rp.projMatrix, rp.simWidth, rp.simHeight);
 
-    // Kompilasi shader program untuk masing-masing bagian render
-    rp.particleShader = createProgram(particleVert, particleFrag);
-    rp.gridShader = createProgram(basicVert, basicFrag);
-    rp.obstacleShader = createProgram(basicVert, basicFrag);
+    rp.particleShader = makeProgram(kParticleVert, kParticleFrag);
+    rp.gridShader = makeProgram(kGridVert, kGridFrag);
+    rp.obstacleShader = makeProgram(kObstacleVert, kObstacleFrag);
 
-    // =================================================================
-    // 1. Inisialisasi VAO & VBO Partikel (Menggunakan Layout 2 VBO)
-    // =================================================================
     glGenVertexArrays(1, &rp.particleVAO);
     glBindVertexArray(rp.particleVAO);
 
-    // Alokasi particleVBO (Koordinat X, dilanjutkan koordinat Y di memori terpadu)
     glGenBuffers(1, &rp.particleVBO);
     glBindBuffer(GL_ARRAY_BUFFER, rp.particleVBO);
-    glBufferData(GL_ARRAY_BUFFER, maxParticles * 2 * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
-
-    // Atribut 0: Posisi X (Mulai dari byte awal / offset 0)
+    glBufferData(GL_ARRAY_BUFFER, 2 * maxParticles * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
     glVertexAttribPointer(0, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-
-    // Atribut 1: Posisi Y (Mulai dari offset setengah buffer / setelah data X selesai)
-    glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)(maxParticles * sizeof(float)));
+    glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, sizeof(float),
+                          (void*)((size_t)maxParticles * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    // Alokasi colorVBO (Komponen warna R, dilanjutkan G, dilanjutkan B di memori terpadu)
     glGenBuffers(1, &rp.colorVBO);
     glBindBuffer(GL_ARRAY_BUFFER, rp.colorVBO);
-    glBufferData(GL_ARRAY_BUFFER, maxParticles * 3 * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
-
-    // Atribut 2: Red (Mulai dari offset 0)
+    glBufferData(GL_ARRAY_BUFFER, 3 * maxParticles * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
     glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
     glEnableVertexAttribArray(2);
-
-    // Atribut 3: Green (Mulai dari offset sepertiga buffer / setelah data Red selesai)
-    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)(maxParticles * sizeof(float)));
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(float),
+                          (void*)((size_t)maxParticles * sizeof(float)));
     glEnableVertexAttribArray(3);
-
-    // Atribut 4: Blue (Mulai dari offset dua pertiga buffer / setelah data Green selesai)
-    glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)(2 * maxParticles * sizeof(float)));
+    glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(float),
+                          (void*)((size_t)2 * maxParticles * sizeof(float)));
     glEnableVertexAttribArray(4);
 
-    // =================================================================
-    // 2. Inisialisasi VAO & VBO Grid
-    // =================================================================
+    glBindVertexArray(0);
+
+    static const float quadVerts[12] = {
+        0.0f, 0.0f,  1.0f, 0.0f,  1.0f, 1.0f,
+        0.0f, 0.0f,  1.0f, 1.0f,  0.0f, 1.0f
+    };
+
     glGenVertexArrays(1, &rp.gridVAO);
     glBindVertexArray(rp.gridVAO);
 
     glGenBuffers(1, &rp.gridQuadVBO);
     glBindBuffer(GL_ARRAY_BUFFER, rp.gridQuadVBO);
-    glBufferData(GL_ARRAY_BUFFER, fNumCells * 6 * 5 * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
-
-    // Atribut Grid: Posisi (Location 0) & Warna (Location 1)
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVerts), quadVerts, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
-    glEnableVertexAttribArray(1);
+    glVertexAttribDivisor(0, 0);
 
-    // =================================================================
-    // 3. Inisialisasi VAO & VBO Obstacle (Triangle Fan)
-    // =================================================================
+    glGenBuffers(1, &rp.gridColorVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, rp.gridColorVBO);
+    glBufferData(GL_ARRAY_BUFFER, fNumCells * 3 * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribDivisor(1, 1);
+
+    glBindVertexArray(0);
+
+    const int N = 64;
+    rp.obstacleVertCount = N + 2;
+    std::vector<float> circle;
+    circle.push_back(0.0f);
+    circle.push_back(0.0f);
+    for (int i = 0; i <= N; ++i) {
+        float a = (float)i / N * 2.0f * 3.14159265f;
+        circle.push_back(cosf(a));
+        circle.push_back(sinf(a));
+    }
+
     glGenVertexArrays(1, &rp.obstacleVAO);
     glBindVertexArray(rp.obstacleVAO);
 
     glGenBuffers(1, &rp.obstacleVBO);
     glBindBuffer(GL_ARRAY_BUFFER, rp.obstacleVBO);
-
-    // 32 segmen untuk lingkaran mulus + 1 pusat + 1 penutup = 34 vertices
-    rp.obstacleVertCount = 34;
-    glBufferData(GL_ARRAY_BUFFER, rp.obstacleVertCount * 5 * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
-
-    // Atribut Obstacle: Posisi (Location 0) & Warna (Location 1)
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glBufferData(GL_ARRAY_BUFFER, (int)circle.size() * sizeof(float), circle.data(), GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
-    glEnableVertexAttribArray(1);
 
     glBindVertexArray(0);
-
-    std::cout << "[OpenGL] VBO 2-Resource Pipeline berhasil diinisialisasi.\n";
 }
 
+// === renderParticles ===
 void renderParticles(RenderPipeline& rp, int numParticles, float pointSizePx) {
     if (numParticles <= 0) return;
-
-    // Aktifkan point sprite untuk rendering lingkaran halus pada titik GL_POINTS
     glEnable(GL_PROGRAM_POINT_SIZE);
-    glEnable(GL_POINT_SPRITE);
-
     glUseProgram(rp.particleShader);
-
-    // Orthographic Matrix bawaan untuk memetakan koordinat simulasi ke screen space
-    float ortho[16] = {
-        2.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 2.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, -1.0f, 0.0f,
-        -1.0f,-1.0f, 0.0f, 1.0f
-    };
-    GLint projLoc = glGetUniformLocation(rp.particleShader, "projection");
-    glUniformMatrix4fv(projLoc, 1, GL_FALSE, ortho);
-
-    GLint pointSizeLoc = glGetUniformLocation(rp.particleShader, "pointSize");
-    glUniform1f(pointSizeLoc, pointSizePx);
-
+    glUniformMatrix4fv(glGetUniformLocation(rp.particleShader, "projection"),
+                       1, GL_FALSE, rp.projMatrix);
+    glUniform1f(glGetUniformLocation(rp.particleShader, "pointSize"), pointSizePx);
     glBindVertexArray(rp.particleVAO);
     glDrawArrays(GL_POINTS, 0, numParticles);
     glBindVertexArray(0);
 }
 
+// === renderGrid ===
 void renderGrid(RenderPipeline& rp, const float* cellColor, int fNumX, int fNumY, float h) {
     if (!cellColor) return;
-    
-    // Bentuk geometri grid ke quads secara dinamis menggunakan mapping VBO langsung di GPU
-    glBindBuffer(GL_ARRAY_BUFFER, rp.gridQuadVBO);
-    float* ptr = (float*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-    if (ptr) {
-        int idx = 0;
-        for (int i = 0; i < fNumX; ++i) {
-            for (int j = 0; j < fNumY; ++j) {
-                int cellNr = i * fNumY + j;
-                float r = cellColor[3 * cellNr + 0];
-                float g = cellColor[3 * cellNr + 1];
-                float b = cellColor[3 * cellNr + 2];
-
-                // Jika sel kosong (udara/warna hitam), abaikan pengisian data render
-                if (r == 0.0f && g == 0.0f && b == 0.0f) {
-                    for (int k = 0; k < 30; ++k) ptr[idx++] = 0.0f;
-                    continue;
-                }
-
-                float x0 = i * h;
-                float y0 = j * h;
-                float x1 = x0 + h;
-                float y1 = y0 + h;
-
-                // Segitiga 1
-                ptr[idx++] = x0; ptr[idx++] = y0; ptr[idx++] = r; ptr[idx++] = g; ptr[idx++] = b;
-                ptr[idx++] = x1; ptr[idx++] = y0; ptr[idx++] = r; ptr[idx++] = g; ptr[idx++] = b;
-                ptr[idx++] = x0; ptr[idx++] = y1; ptr[idx++] = r; ptr[idx++] = g; ptr[idx++] = b;
-
-                // Segitiga 2
-                ptr[idx++] = x1; ptr[idx++] = y0; ptr[idx++] = r; ptr[idx++] = g; ptr[idx++] = b;
-                ptr[idx++] = x1; ptr[idx++] = y1; ptr[idx++] = r; ptr[idx++] = g; ptr[idx++] = b;
-                ptr[idx++] = x0; ptr[idx++] = y1; ptr[idx++] = r; ptr[idx++] = g; ptr[idx++] = b;
-            }
-        }
-        glUnmapBuffer(GL_ARRAY_BUFFER);
-    }
-
-    // Aktifkan program shader grid
+    int cells = fNumX * fNumY;
+    glBindBuffer(GL_ARRAY_BUFFER, rp.gridColorVBO);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, cells * 3 * sizeof(float), cellColor);
     glUseProgram(rp.gridShader);
-    
-    float ortho[16] = {
-        2.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 2.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, -1.0f, 0.0f,
-        -1.0f,-1.0f, 0.0f, 1.0f
-    };
-    GLint projLoc = glGetUniformLocation(rp.gridShader, "projection");
-    glUniformMatrix4fv(projLoc, 1, GL_FALSE, ortho);
-
+    glUniformMatrix4fv(glGetUniformLocation(rp.gridShader, "projection"),
+                       1, GL_FALSE, rp.projMatrix);
+    glUniform1f(glGetUniformLocation(rp.gridShader, "h"), h);
+    glUniform1i(glGetUniformLocation(rp.gridShader, "fNumY"), fNumY);
     glBindVertexArray(rp.gridVAO);
-    glDrawArrays(GL_TRIANGLES, 0, rp.fNumCells * 6);
+    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, cells);
     glBindVertexArray(0);
 }
 
+// === renderObstacle ===
 void renderObstacle(RenderPipeline& rp, float ox, float oy, float radius) {
-    glBindBuffer(GL_ARRAY_BUFFER, rp.obstacleVBO);
-    float* ptr = (float*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-    if (ptr) {
-        int idx = 0;
-        float r_color = 0.85f, g_color = 0.35f, b_color = 0.35f; // Merah bata (Obstacle)
-
-        // Titik pusat Triangle Fan
-        ptr[idx++] = ox; ptr[idx++] = oy;
-        ptr[idx++] = r_color; ptr[idx++] = g_color; ptr[idx++] = b_color;
-
-        // Titik sekeliling lingkaran
-        int numSegments = rp.obstacleVertCount - 2;
-        for (int i = 0; i <= numSegments; ++i) {
-            float theta = 2.0f * 3.1415926535f * float(i) / float(numSegments);
-            ptr[idx++] = ox + radius * cosf(theta);
-            ptr[idx++] = oy + radius * sinf(theta);
-            ptr[idx++] = r_color; ptr[idx++] = g_color; ptr[idx++] = b_color;
-        }
-        glUnmapBuffer(GL_ARRAY_BUFFER);
-    }
-
+    if (radius <= 0.0f) return;
     glUseProgram(rp.obstacleShader);
-
-    float ortho[16] = {
-        2.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 2.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, -1.0f, 0.0f,
-        -1.0f,-1.0f, 0.0f, 1.0f
-    };
-    GLint projLoc = glGetUniformLocation(rp.obstacleShader, "projection");
-    glUniformMatrix4fv(projLoc, 1, GL_FALSE, ortho);
-
+    glUniformMatrix4fv(glGetUniformLocation(rp.obstacleShader, "projection"),
+                       1, GL_FALSE, rp.projMatrix);
+    glUniform2f(glGetUniformLocation(rp.obstacleShader, "center"), ox, oy);
+    glUniform1f(glGetUniformLocation(rp.obstacleShader, "radius"), radius);
     glBindVertexArray(rp.obstacleVAO);
     glDrawArrays(GL_TRIANGLE_FAN, 0, rp.obstacleVertCount);
     glBindVertexArray(0);
 }
 
+// === renderDestroy ===
 void renderDestroy(RenderPipeline& rp) {
     glDeleteBuffers(1, &rp.particleVBO);
     glDeleteBuffers(1, &rp.colorVBO);
     glDeleteBuffers(1, &rp.gridQuadVBO);
+    glDeleteBuffers(1, &rp.gridColorVBO);
     glDeleteBuffers(1, &rp.obstacleVBO);
     glDeleteVertexArrays(1, &rp.particleVAO);
     glDeleteVertexArrays(1, &rp.gridVAO);
@@ -310,5 +258,4 @@ void renderDestroy(RenderPipeline& rp) {
     glDeleteProgram(rp.particleShader);
     glDeleteProgram(rp.gridShader);
     glDeleteProgram(rp.obstacleShader);
-    std::cout << "[OpenGL] Resource grafis 2 VBO berhasil dibersihkan dari memori.\n";
 }
