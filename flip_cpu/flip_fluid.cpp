@@ -5,7 +5,10 @@
 #include <algorithm>
 #include <cmath>
 
+
 namespace flipcpu {
+
+CpuTelemetry g_telemetry;
 
 static inline float clampf(float x, float lo, float hi) {
     return std::max(lo, std::min(hi, x));
@@ -545,21 +548,63 @@ void FlipFluid::simulate(float dt, float gravity, float flipRatio,
 {
     if (numSubSteps < 1) numSubSteps = 1;
     float sdt = dt / numSubSteps;
+    
+    g_telemetry.pressureIters = numPressureIters;
+
+    double frame_t1 = 0.0, frame_t2 = 0.0, frame_t3 = 0.0;
+    double frame_t4 = 0.0, frame_t5 = 0.0, frame_t6 = 0.0, frame_t7 = 0.0;
+
     for (int step = 0; step < numSubSteps; ++step) {
+        // T1: Integrate Particles
+        auto t0 = std::chrono::steady_clock::now();
         integrateParticles(sdt, gravity);
-        if (separateParticles)
-            pushParticlesApart(numParticleIters);
-        handleParticleCollisions(obstacleX, obstacleY, obstacleRadius,
-                                 obstacleVelX, obstacleVelY);
+        frame_t1 += std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count();
+
+        // T2: Push Particles Apart
+        auto t1 = std::chrono::steady_clock::now();
+        if (separateParticles) pushParticlesApart(numParticleIters);
+        frame_t2 += std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t1).count();
+
+        // T3: Handle Collisions
+        auto t2 = std::chrono::steady_clock::now();
+        handleParticleCollisions(obstacleX, obstacleY, obstacleRadius, obstacleVelX, obstacleVelY);
+        frame_t3 += std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t2).count();
+
+        // T4: P2G (Transfer Velocities - true)
+        auto t3 = std::chrono::steady_clock::now();
         transferVelocities(true);
+        frame_t4 += std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t3).count();
+
+        // T5: Update Particle Density
+        auto t4 = std::chrono::steady_clock::now();
         updateParticleDensity();
-        if (particleRestDensity == 0.0f)
-            particleRestDensity = computeRestDensity();
+        if (particleRestDensity == 0.0f) particleRestDensity = computeRestDensity();
+        frame_t5 += std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t4).count();
+
+        // T6: Solve Incompressibility (Pressure Solver)
+        auto t5 = std::chrono::steady_clock::now();
         solveIncompressibility(numPressureIters, sdt, overRelaxation, compensateDrift);
+        frame_t6 += std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t5).count();
+
+        // T7: G2P (Transfer Velocities - false)
+        auto t6 = std::chrono::steady_clock::now();
         transferVelocities(false, flipRatio);
+        frame_t7 += std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t6).count();
     }
+
+    g_telemetry.t1 += frame_t1;
+    g_telemetry.t2 += frame_t2;
+    g_telemetry.t3 += frame_t3;
+    g_telemetry.t4 += frame_t4;
+    g_telemetry.t5 += frame_t5;
+    g_telemetry.t6 += frame_t6;
+    g_telemetry.t7 += frame_t7;
+
+    // T8: Update Colors
+    auto t7 = std::chrono::steady_clock::now();
     updateParticleColors();
     updateCellColors();
+    g_telemetry.t8 += std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t7).count();
 }
 
 } // namespace flipcpu
