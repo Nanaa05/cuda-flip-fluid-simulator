@@ -90,6 +90,30 @@ float g_h = 0.0f;
 float g_particleRadius = 0.0f;
 int g_fNumCells = 0;
 
+static bool g_noInterop = false;
+static float* g_rawPosX = nullptr;
+static float* g_rawPosY = nullptr;
+static float* g_rawColorR = nullptr;
+static float* g_rawColorG = nullptr;
+static float* g_rawColorB = nullptr;
+
+static void allocRawBuffers(int n) {
+    cudaMalloc(&g_rawPosX,   n * sizeof(float));
+    cudaMalloc(&g_rawPosY,   n * sizeof(float));
+    cudaMalloc(&g_rawColorR, n * sizeof(float));
+    cudaMalloc(&g_rawColorG, n * sizeof(float));
+    cudaMalloc(&g_rawColorB, n * sizeof(float));
+}
+
+static void freeRawBuffers() {
+    if (g_rawPosX)   cudaFree(g_rawPosX);
+    if (g_rawPosY)   cudaFree(g_rawPosY);
+    if (g_rawColorR) cudaFree(g_rawColorR);
+    if (g_rawColorG) cudaFree(g_rawColorG);
+    if (g_rawColorB) cudaFree(g_rawColorB);
+    g_rawPosX = g_rawPosY = g_rawColorR = g_rawColorG = g_rawColorB = nullptr;
+}
+
 static int s_glxAttrs[] = { GLX_RGBA, GLX_DOUBLEBUFFER, GLX_DEPTH_SIZE, 24, None };
 
 static void createWindow() {
