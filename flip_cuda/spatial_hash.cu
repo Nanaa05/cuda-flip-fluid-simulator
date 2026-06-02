@@ -62,7 +62,6 @@ __global__ void separate_kernel(
     float minDist = 2.0f * d_params.particleRadius;
     float minDist2 = minDist * minDist;
     const float colorDiffusion = 0.001f;
-    const float relax = 0.5f;
 
     float dispX = 0.0f;
     float dispY = 0.0f;
@@ -98,8 +97,8 @@ __global__ void separate_kernel(
         }
     }
 
-    posOutX[i] = px + dispX * relax;
-    posOutY[i] = py + dispY * relax;
+    posOutX[i] = px + dispX;
+    posOutY[i] = py + dispY;
     colorR[i] = cr;
     colorG[i] = cg;
     colorB[i] = cb;
