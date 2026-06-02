@@ -27,6 +27,9 @@ void DeviceData::allocate(int fNumCells_, int pNumCells, int maxParticles_) {
 
     cudaMalloc(&d_restDensity, sizeof(float));
     cudaMalloc(&d_partialSums, (pNumCells + 1) * sizeof(int));
+
+    cudaMalloc(&sepPosX, maxParticles * sizeof(float));
+    cudaMalloc(&sepPosY, maxParticles * sizeof(float));
 }
 
 // === DeviceData::free ===
@@ -49,6 +52,8 @@ void DeviceData::free() {
     if (cellParticleIds) cudaFree(cellParticleIds);
     if (d_restDensity) cudaFree(d_restDensity);
     if (d_partialSums) cudaFree(d_partialSums);
+    if (sepPosX) cudaFree(sepPosX);
+    if (sepPosY) cudaFree(sepPosY);
 
     velX = velY = nullptr;
     u = v = du = dv = prevU = prevV = p = s = nullptr;
@@ -56,6 +61,7 @@ void DeviceData::free() {
     cellColor = particleDensity = nullptr;
     numCellParticles = firstCellParticle = cellParticleIds = nullptr;
     d_restDensity = d_partialSums = nullptr;
+    sepPosX = sepPosY = nullptr;
 }
 
 // === DeviceData::reset: map interop VBOs, copy initial positions and colors, unmap ===
