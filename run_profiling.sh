@@ -14,12 +14,12 @@ export __GL_SYNC_TO_VBLANK=0
 echo "[PROSES] Menjalankan nsys (Resolusi 200)..."
 nsys profile --stats=true --force-overwrite=true -o fluid_timeline_res200 ./flip_cuda/flip --benchmark 200 >> "$LOG_FILE" 2>&1
 
-echo "[PROSES] Menjalankan ncu (Resolusi 100)..."
+echo "[PROSES] Menjalankan ncu (Resolusi 200)..."
 sudo ncu --launch-skip 100 --launch-count 10 \
     --metrics sm__throughput.avg.pct_of_peak_sustained_elapsed,dram__throughput.avg.pct_of_peak_sustained_elapsed,smsp__warps_active.avg.pct_of_peak_sustained_active \
     --section MemoryWorkloadAnalysis \
     --section ComputeWorkloadAnalysis \
-    ./flip_cuda/flip --benchmark 100 >> "$LOG_FILE" 2>&1
+    ./flip_cuda/flip --benchmark 200 >> "$LOG_FILE" 2>&1
 
 echo "[PROSES] Pembuatan grafik visualisasi..."
 python3 plot.py
