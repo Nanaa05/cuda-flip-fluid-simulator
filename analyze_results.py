@@ -35,10 +35,10 @@ def parse_log(path):
 
 cpu, cuda, cuda_ni = parse_log(LOG_FILE)
 resolutions = sorted(cpu.keys())
-stages = ['T1','T2','T3','T4','T5','T6','T7']
-stage_labels = ['T1\nIntegrate','T2\nPush Apart','T3\nCollision','T4\nP2G','T5\nDensity','T6\nPressure','T7\nG2P']
+stages = ['T1','T2','T3','T4','T5','T6','T7','T8','T9','T10']
+stage_labels = ['T1\nIntegrate','T2\nPush Apart','T3\nCollision','T4\nP2G','T5\nDensity','T6\nPressure','T7\nG2P','T8\nColors','T9\nRender','T10\nH2D/D2H']
 
-fig, axes = plt.subplots(1, 2, figsize=(16, 6))
+fig, axes = plt.subplots(1, 2, figsize=(20, 6))
 fig.suptitle('CPU vs CUDA FLIP Benchmark Analysis', fontsize=14, fontweight='bold')
 
 ax1 = axes[0]
@@ -88,7 +88,7 @@ print(f"Saved: {out}")
 
 print("\nSpeedup Table (CPU / CUDA) per Stage")
 print(f"{'Res':>5} | " + " | ".join(f"{s:>6}" for s in stages) + " | T_total")
-print("-" * 80)
+print("-" * 110)
 for r in resolutions:
     row = []
     for s in stages:
