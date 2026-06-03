@@ -1,15 +1,15 @@
 ====================================================================
-   LOG EKSPERIMEN PROFILING NSIGHT - 2026-06-03 01:31:50
+   LOG EKSPERIMEN PROFILING NSIGHT - 2026-06-03 07:33:42
 ====================================================================
 WARNING: Device-side CUDA Event completion trace is currently enabled.
          This may increase runtime overhead and the likelihood of false
          dependencies across CUDA Streams. If you wish to avoid this, please
          disable the feature with --cuda-event-trace=false.
-[BENCHMARK_CUDA_RESULT] res=200 T1=0.086ms T2=2.888ms T3=0.103ms T4=0.978ms T5=0.263ms T6=16.915ms T7=0.279ms T8=0.041ms T9=94.880ms T10=0.802ms T_total=118.121ms particles=76104
-[T10_OVERHEAD] res=200 T10=0.802ms T_total=118.121ms overhead=0.68%
+[BENCHMARK_CUDA_RESULT] res=200 T1=0.068ms T2=2.669ms T3=0.087ms T4=0.961ms T5=0.239ms T6=16.813ms T7=0.256ms T8=0.036ms T9=57.488ms T10=0.744ms T_total=80.003ms particles=76104
+[T10_OVERHEAD] res=200 T10=0.744ms T_total=80.003ms overhead=0.93%
 Collecting data...
-Generating '/tmp/nsys-report-ad1c.qdstrm'
-[1/8] [0%                          ] fluid_timeline_res200.nsys-rep[1/8] [0%                          ] fluid_timeline_res200.nsys-rep[1/8] [===24%                      ] fluid_timeline_res200.nsys-rep[1/8] [==21%                       ] fluid_timeline_res200.nsys-rep[1/8] [==19%                       ] fluid_timeline_res200.nsys-rep[1/8] [=17%                        ] fluid_timeline_res200.nsys-rep[1/8] [=15%                        ] fluid_timeline_res200.nsys-rep[1/8] [14%                         ] fluid_timeline_res200.nsys-rep[1/8] [13%                         ] fluid_timeline_res200.nsys-rep[1/8] [12%                         ] fluid_timeline_res200.nsys-rep[1/8] [11%                         ] fluid_timeline_res200.nsys-rep[1/8] [10%                         ] fluid_timeline_res200.nsys-rep[1/8] [9%                          ] fluid_timeline_res200.nsys-rep[1/8] [8%                          ] fluid_timeline_res200.nsys-rep[1/8] [7%                          ] fluid_timeline_res200.nsys-rep[1/8] [6%                          ] fluid_timeline_res200.nsys-rep[1/8] [5%                          ] fluid_timeline_res200.nsys-rep[1/8] [5%                          ] fluid_timeline_res200.nsys-rep[1/8] [6%                          ] fluid_timeline_res200.nsys-rep[1/8] [7%                          ] fluid_timeline_res200.nsys-rep[1/8] [8%                          ] fluid_timeline_res200.nsys-rep[1/8] [10%                         ] fluid_timeline_res200.nsys-rep[1/8] [11%                         ] fluid_timeline_res200.nsys-rep[1/8] [13%                         ] fluid_timeline_res200.nsys-rep[1/8] [14%                         ] fluid_timeline_res200.nsys-rep[1/8] [=15%                        ] fluid_timeline_res200.nsys-rep[1/8] [=17%                        ] fluid_timeline_res200.nsys-rep[1/8] [==18%                       ] fluid_timeline_res200.nsys-rep[1/8] [==20%                       ] fluid_timeline_res200.nsys-rep[1/8] [==21%                       ] fluid_timeline_res200.nsys-rep[1/8] [===23%                      ] fluid_timeline_res200.nsys-rep[1/8] [===24%                      ] fluid_timeline_res200.nsys-rep[1/8] [====26%                     ] fluid_timeline_res200.nsys-rep[1/8] [====27%                     ] fluid_timeline_res200.nsys-rep[1/8] [=====29%                    ] fluid_timeline_res200.nsys-rep[1/8] [=====30%                    ] fluid_timeline_res200.nsys-rep[1/8] [=====31%                    ] fluid_timeline_res200.nsys-rep[1/8] [======33%                   ] fluid_timeline_res200.nsys-rep[1/8] [======34%                   ] fluid_timeline_res200.nsys-rep[1/8] [=======36%                  ] fluid_timeline_res200.nsys-rep[1/8] [=======37%                  ] fluid_timeline_res200.nsys-rep[1/8] [=======39%                  ] fluid_timeline_res200.nsys-rep[1/8] [========40%                 ] fluid_timeline_res200.nsys-rep[1/8] [========42%                 ] fluid_timeline_res200.nsys-rep[1/8] [=========43%                ] fluid_timeline_res200.nsys-rep[1/8] [=========44%                ] fluid_timeline_res200.nsys-rep[1/8] [=========46%                ] fluid_timeline_res200.nsys-rep[1/8] [==========47%               ] fluid_timeline_res200.nsys-rep[1/8] [==========49%               ] fluid_timeline_res200.nsys-rep[1/8] [===========50%              ] fluid_timeline_res200.nsys-rep[1/8] [===========52%              ] fluid_timeline_res200.nsys-rep[1/8] [===========53%              ] fluid_timeline_res200.nsys-rep[1/8] [============55%             ] fluid_timeline_res200.nsys-rep[1/8] [============56%             ] fluid_timeline_res200.nsys-rep[1/8] [=============58%            ] fluid_timeline_res200.nsys-rep[1/8] [=============59%            ] fluid_timeline_res200.nsys-rep[1/8] [==============61%           ] fluid_timeline_res200.nsys-rep[1/8] [==============62%           ] fluid_timeline_res200.nsys-rep[1/8] [==============63%           ] fluid_timeline_res200.nsys-rep[1/8] [===============65%          ] fluid_timeline_res200.nsys-rep[1/8] [===============66%          ] fluid_timeline_res200.nsys-rep[1/8] [================68%         ] fluid_timeline_res200.nsys-rep[1/8] [================69%         ] fluid_timeline_res200.nsys-rep[1/8] [================71%         ] fluid_timeline_res200.nsys-rep[1/8] [=================72%        ] fluid_timeline_res200.nsys-rep[1/8] [=================74%        ] fluid_timeline_res200.nsys-rep[1/8] [==================75%       ] fluid_timeline_res200.nsys-rep[1/8] [========================100%] fluid_timeline_res200.nsys-rep[1/8] [========================100%] fluid_timeline_res200.nsys-rep
+Generating '/tmp/nsys-report-9ef0.qdstrm'
+[1/8] [0%                          ] fluid_timeline_res200.nsys-rep[1/8] [0%                          ] fluid_timeline_res200.nsys-rep[1/8] [0%                          ] fluid_timeline_res200.nsys-rep[1/8] [==20%                       ] fluid_timeline_res200.nsys-rep[1/8] [=17%                        ] fluid_timeline_res200.nsys-rep[1/8] [=15%                        ] fluid_timeline_res200.nsys-rep[1/8] [14%                         ] fluid_timeline_res200.nsys-rep[1/8] [13%                         ] fluid_timeline_res200.nsys-rep[1/8] [12%                         ] fluid_timeline_res200.nsys-rep[1/8] [11%                         ] fluid_timeline_res200.nsys-rep[1/8] [10%                         ] fluid_timeline_res200.nsys-rep[1/8] [9%                          ] fluid_timeline_res200.nsys-rep[1/8] [8%                          ] fluid_timeline_res200.nsys-rep[1/8] [7%                          ] fluid_timeline_res200.nsys-rep[1/8] [6%                          ] fluid_timeline_res200.nsys-rep[1/8] [5%                          ] fluid_timeline_res200.nsys-rep[1/8] [5%                          ] fluid_timeline_res200.nsys-rep[1/8] [6%                          ] fluid_timeline_res200.nsys-rep[1/8] [7%                          ] fluid_timeline_res200.nsys-rep[1/8] [8%                          ] fluid_timeline_res200.nsys-rep[1/8] [9%                          ] fluid_timeline_res200.nsys-rep[1/8] [10%                         ] fluid_timeline_res200.nsys-rep[1/8] [11%                         ] fluid_timeline_res200.nsys-rep[1/8] [12%                         ] fluid_timeline_res200.nsys-rep[1/8] [13%                         ] fluid_timeline_res200.nsys-rep[1/8] [14%                         ] fluid_timeline_res200.nsys-rep[1/8] [=15%                        ] fluid_timeline_res200.nsys-rep[1/8] [=16%                        ] fluid_timeline_res200.nsys-rep[1/8] [=17%                        ] fluid_timeline_res200.nsys-rep[1/8] [==18%                       ] fluid_timeline_res200.nsys-rep[1/8] [==19%                       ] fluid_timeline_res200.nsys-rep[1/8] [==20%                       ] fluid_timeline_res200.nsys-rep[1/8] [==21%                       ] fluid_timeline_res200.nsys-rep[1/8] [===22%                      ] fluid_timeline_res200.nsys-rep[1/8] [===23%                      ] fluid_timeline_res200.nsys-rep[1/8] [===24%                      ] fluid_timeline_res200.nsys-rep[1/8] [====25%                     ] fluid_timeline_res200.nsys-rep[1/8] [====26%                     ] fluid_timeline_res200.nsys-rep[1/8] [====27%                     ] fluid_timeline_res200.nsys-rep[1/8] [====28%                     ] fluid_timeline_res200.nsys-rep[1/8] [=====29%                    ] fluid_timeline_res200.nsys-rep[1/8] [=====30%                    ] fluid_timeline_res200.nsys-rep[1/8] [=====31%                    ] fluid_timeline_res200.nsys-rep[1/8] [=====32%                    ] fluid_timeline_res200.nsys-rep[1/8] [======33%                   ] fluid_timeline_res200.nsys-rep[1/8] [======34%                   ] fluid_timeline_res200.nsys-rep[1/8] [======35%                   ] fluid_timeline_res200.nsys-rep[1/8] [=======36%                  ] fluid_timeline_res200.nsys-rep[1/8] [=======37%                  ] fluid_timeline_res200.nsys-rep[1/8] [=======38%                  ] fluid_timeline_res200.nsys-rep[1/8] [=======39%                  ] fluid_timeline_res200.nsys-rep[1/8] [========40%                 ] fluid_timeline_res200.nsys-rep[1/8] [========41%                 ] fluid_timeline_res200.nsys-rep[1/8] [========42%                 ] fluid_timeline_res200.nsys-rep[1/8] [=========43%                ] fluid_timeline_res200.nsys-rep[1/8] [=========44%                ] fluid_timeline_res200.nsys-rep[1/8] [=========45%                ] fluid_timeline_res200.nsys-rep[1/8] [=========46%                ] fluid_timeline_res200.nsys-rep[1/8] [==========47%               ] fluid_timeline_res200.nsys-rep[1/8] [==========48%               ] fluid_timeline_res200.nsys-rep[1/8] [==========49%               ] fluid_timeline_res200.nsys-rep[1/8] [===========50%              ] fluid_timeline_res200.nsys-rep[1/8] [===========51%              ] fluid_timeline_res200.nsys-rep[1/8] [===========52%              ] fluid_timeline_res200.nsys-rep[1/8] [===========53%              ] fluid_timeline_res200.nsys-rep[1/8] [============54%             ] fluid_timeline_res200.nsys-rep[1/8] [============55%             ] fluid_timeline_res200.nsys-rep[1/8] [============56%             ] fluid_timeline_res200.nsys-rep[1/8] [============57%             ] fluid_timeline_res200.nsys-rep[1/8] [=============58%            ] fluid_timeline_res200.nsys-rep[1/8] [=============59%            ] fluid_timeline_res200.nsys-rep[1/8] [=============60%            ] fluid_timeline_res200.nsys-rep[1/8] [==============61%           ] fluid_timeline_res200.nsys-rep[1/8] [==============62%           ] fluid_timeline_res200.nsys-rep[1/8] [==============63%           ] fluid_timeline_res200.nsys-rep[1/8] [==============64%           ] fluid_timeline_res200.nsys-rep[1/8] [===============65%          ] fluid_timeline_res200.nsys-rep[1/8] [===============66%          ] fluid_timeline_res200.nsys-rep[1/8] [===============67%          ] fluid_timeline_res200.nsys-rep[1/8] [================68%         ] fluid_timeline_res200.nsys-rep[1/8] [================69%         ] fluid_timeline_res200.nsys-rep[1/8] [================70%         ] fluid_timeline_res200.nsys-rep[1/8] [================71%         ] fluid_timeline_res200.nsys-rep[1/8] [=================72%        ] fluid_timeline_res200.nsys-rep[1/8] [=================73%        ] fluid_timeline_res200.nsys-rep[1/8] [=================74%        ] fluid_timeline_res200.nsys-rep[1/8] [==================75%       ] fluid_timeline_res200.nsys-rep[1/8] [========================100%] fluid_timeline_res200.nsys-rep[1/8] [========================100%] fluid_timeline_res200.nsys-rep
 [2/8] [0%                          ] fluid_timeline_res200.sqlite[2/8] [1%                          ] fluid_timeline_res200.sqlite[2/8] [2%                          ] fluid_timeline_res200.sqlite[2/8] [3%                          ] fluid_timeline_res200.sqlite[2/8] [4%                          ] fluid_timeline_res200.sqlite[2/8] [5%                          ] fluid_timeline_res200.sqlite[2/8] [6%                          ] fluid_timeline_res200.sqlite[2/8] [7%                          ] fluid_timeline_res200.sqlite[2/8] [8%                          ] fluid_timeline_res200.sqlite[2/8] [9%                          ] fluid_timeline_res200.sqlite[2/8] [10%                         ] fluid_timeline_res200.sqlite[2/8] [11%                         ] fluid_timeline_res200.sqlite[2/8] [12%                         ] fluid_timeline_res200.sqlite[2/8] [13%                         ] fluid_timeline_res200.sqlite[2/8] [14%                         ] fluid_timeline_res200.sqlite[2/8] [=15%                        ] fluid_timeline_res200.sqlite[2/8] [=16%                        ] fluid_timeline_res200.sqlite[2/8] [=17%                        ] fluid_timeline_res200.sqlite[2/8] [==18%                       ] fluid_timeline_res200.sqlite[2/8] [==19%                       ] fluid_timeline_res200.sqlite[2/8] [==20%                       ] fluid_timeline_res200.sqlite[2/8] [==21%                       ] fluid_timeline_res200.sqlite[2/8] [===22%                      ] fluid_timeline_res200.sqlite[2/8] [===23%                      ] fluid_timeline_res200.sqlite[2/8] [===24%                      ] fluid_timeline_res200.sqlite[2/8] [====25%                     ] fluid_timeline_res200.sqlite[2/8] [====26%                     ] fluid_timeline_res200.sqlite[2/8] [====27%                     ] fluid_timeline_res200.sqlite[2/8] [====28%                     ] fluid_timeline_res200.sqlite[2/8] [=====29%                    ] fluid_timeline_res200.sqlite[2/8] [=====30%                    ] fluid_timeline_res200.sqlite[2/8] [=====31%                    ] fluid_timeline_res200.sqlite[2/8] [=====32%                    ] fluid_timeline_res200.sqlite[2/8] [======33%                   ] fluid_timeline_res200.sqlite[2/8] [======34%                   ] fluid_timeline_res200.sqlite[2/8] [======35%                   ] fluid_timeline_res200.sqlite[2/8] [=======36%                  ] fluid_timeline_res200.sqlite[2/8] [=======37%                  ] fluid_timeline_res200.sqlite[2/8] [=======38%                  ] fluid_timeline_res200.sqlite[2/8] [=======39%                  ] fluid_timeline_res200.sqlite[2/8] [========40%                 ] fluid_timeline_res200.sqlite[2/8] [========41%                 ] fluid_timeline_res200.sqlite[2/8] [========42%                 ] fluid_timeline_res200.sqlite[2/8] [=========43%                ] fluid_timeline_res200.sqlite[2/8] [=========44%                ] fluid_timeline_res200.sqlite[2/8] [=========45%                ] fluid_timeline_res200.sqlite[2/8] [=========46%                ] fluid_timeline_res200.sqlite[2/8] [==========47%               ] fluid_timeline_res200.sqlite[2/8] [==========48%               ] fluid_timeline_res200.sqlite[2/8] [==========49%               ] fluid_timeline_res200.sqlite[2/8] [===========50%              ] fluid_timeline_res200.sqlite[2/8] [===========51%              ] fluid_timeline_res200.sqlite[2/8] [===========52%              ] fluid_timeline_res200.sqlite[2/8] [===========53%              ] fluid_timeline_res200.sqlite[2/8] [============54%             ] fluid_timeline_res200.sqlite[2/8] [============55%             ] fluid_timeline_res200.sqlite[2/8] [============56%             ] fluid_timeline_res200.sqlite[2/8] [============57%             ] fluid_timeline_res200.sqlite[2/8] [=============58%            ] fluid_timeline_res200.sqlite[2/8] [=============59%            ] fluid_timeline_res200.sqlite[2/8] [=============60%            ] fluid_timeline_res200.sqlite[2/8] [==============61%           ] fluid_timeline_res200.sqlite[2/8] [==============62%           ] fluid_timeline_res200.sqlite[2/8] [==============63%           ] fluid_timeline_res200.sqlite[2/8] [==============64%           ] fluid_timeline_res200.sqlite[2/8] [===============65%          ] fluid_timeline_res200.sqlite[2/8] [===============66%          ] fluid_timeline_res200.sqlite[2/8] [===============67%          ] fluid_timeline_res200.sqlite[2/8] [================68%         ] fluid_timeline_res200.sqlite[2/8] [================69%         ] fluid_timeline_res200.sqlite[2/8] [================70%         ] fluid_timeline_res200.sqlite[2/8] [================71%         ] fluid_timeline_res200.sqlite[2/8] [=================72%        ] fluid_timeline_res200.sqlite[2/8] [=================73%        ] fluid_timeline_res200.sqlite[2/8] [=================74%        ] fluid_timeline_res200.sqlite[2/8] [==================75%       ] fluid_timeline_res200.sqlite[2/8] [==================76%       ] fluid_timeline_res200.sqlite[2/8] [==================77%       ] fluid_timeline_res200.sqlite[2/8] [==================78%       ] fluid_timeline_res200.sqlite[2/8] [===================79%      ] fluid_timeline_res200.sqlite[2/8] [===================80%      ] fluid_timeline_res200.sqlite[2/8] [===================81%      ] fluid_timeline_res200.sqlite[2/8] [===================82%      ] fluid_timeline_res200.sqlite[2/8] [====================83%     ] fluid_timeline_res200.sqlite[2/8] [====================84%     ] fluid_timeline_res200.sqlite[2/8] [====================85%     ] fluid_timeline_res200.sqlite[2/8] [=====================86%    ] fluid_timeline_res200.sqlite[2/8] [=====================87%    ] fluid_timeline_res200.sqlite[2/8] [=====================88%    ] fluid_timeline_res200.sqlite[2/8] [=====================89%    ] fluid_timeline_res200.sqlite[2/8] [======================90%   ] fluid_timeline_res200.sqlite[2/8] [======================91%   ] fluid_timeline_res200.sqlite[2/8] [======================92%   ] fluid_timeline_res200.sqlite[2/8] [=======================93%  ] fluid_timeline_res200.sqlite[2/8] [=======================94%  ] fluid_timeline_res200.sqlite[2/8] [=======================95%  ] fluid_timeline_res200.sqlite[2/8] [=======================96%  ] fluid_timeline_res200.sqlite[2/8] [========================97% ] fluid_timeline_res200.sqlite[2/8] [========================98% ] fluid_timeline_res200.sqlite[2/8] [========================99% ] fluid_timeline_res200.sqlite[2/8] [========================100%] fluid_timeline_res200.sqlite[2/8] [========================100%] fluid_timeline_res200.sqlite
 SKIPPED: /home/lynaten/Projects/cuda-flip-fluid-simulator/fluid_timeline_res200.sqlite does not contain NV Tools Extension (NVTX) data.
 [3/8] Executing 'nvtx_sum' stats report
@@ -17,118 +17,529 @@ SKIPPED: /home/lynaten/Projects/cuda-flip-fluid-simulator/fluid_timeline_res200.
 
  Time (%)  Total Time (ns)  Num Calls    Avg (ns)       Med (ns)      Min (ns)     Max (ns)    StdDev (ns)            Name         
  --------  ---------------  ---------  -------------  -------------  -----------  -----------  ------------  ----------------------
-     62.2  223,312,401,753     14,885   15,002,512.7   10,069,682.0        1,396  260,179,111  26,943,292.1  poll                  
-     21.7   78,011,744,129        156  500,075,282.9  500,072,639.0  500,031,223  500,108,142       8,681.4  pthread_cond_timedwait
-     16.0   57,620,366,530      3,616   15,934,835.9   16,034,474.5        1,956   34,941,743  11,295,375.6  writev                
-      0.0      164,640,354      1,253      131,396.9       21,861.0        1,816    6,394,658     362,967.7  ioctl                 
-      0.0       27,000,571         72      375,007.9      502,478.5       24,445    1,497,133     337,266.7  pthread_rwlock_wrlock 
-      0.0       12,687,000      4,750        2,670.9        2,374.0        1,396       74,033       1,949.2  recvmsg               
-      0.0        6,088,483      3,924        1,551.6        1,466.0        1,327       43,442         885.6  pthread_cond_broadcast
-      0.0        6,028,964         64       94,202.6       16,098.5        6,705    1,967,377     266,838.3  mmap64                
-      0.0        5,820,842      3,835        1,517.8        1,466.0        1,327       40,089         879.8  pthread_cond_signal   
-      0.0        4,748,286        661        7,183.5        6,705.0        5,378       32,686       1,785.9  ppoll                 
-      0.0        2,323,711         64       36,308.0       35,060.5        1,397       76,687      15,682.3  pthread_rwlock_rdlock 
-      0.0        1,797,999        476        3,777.3        1,956.0        1,397       44,280       6,325.6  read                  
-      0.0        1,101,614          9      122,401.6       45,327.0       33,803      736,273     230,467.5  sem_timedwait         
-      0.0          923,242         17       54,308.4       21,023.0        5,587      318,200      90,272.3  munmap                
-      0.0          912,411         97        9,406.3        6,984.0        4,190       59,226       7,494.2  open64                
-      0.0          624,466        123        5,077.0        3,771.0        2,793       71,938       6,983.4  open                  
-      0.0          553,569         80        6,919.6        3,842.0        2,375       72,077       9,802.9  recv                  
-      0.0          401,241         56        7,165.0        5,727.0        2,863       20,044       4,117.8  fopen                 
-      0.0          372,259         42        8,863.3        9,219.0        2,375       21,023       3,850.8  fclose                
-      0.0          352,703          4       88,175.8       89,153.5       62,020      112,376      24,457.6  pthread_create        
-      0.0          296,972        145        2,048.1        1,466.0        1,396       20,533       2,426.4  fread                 
-      0.0          286,002         18       15,889.0        9,742.5        4,261      107,626      23,404.7  mmap                  
-      0.0          193,952          9       21,550.2       20,464.0        2,864       42,813      10,705.7  pthread_mutex_lock    
-      0.0          166,362         12       13,863.5        3,317.0        1,886      119,779      33,483.7  write                 
-      0.0          144,084          2       72,042.0       72,042.0       14,248      129,836      81,733.1  openat                
-      0.0          107,138          4       26,784.5       25,422.5       12,921       43,372      13,697.2  mprotect              
-      0.0          106,369          1      106,369.0      106,369.0      106,369      106,369           0.0  pthread_cond_wait     
-      0.0           98,687         22        4,485.8        1,397.0        1,396       68,724      14,347.9  fgets                 
-      0.0           72,497          6       12,082.8       11,105.0        4,750       23,746       6,359.1  socket                
-      0.0           72,357          4       18,089.3        8,241.5        5,238       50,636      21,744.7  pipe2                 
-      0.0           69,492         29        2,396.3        1,956.0        1,397        6,635       1,075.6  fcntl                 
-      0.0           63,206         11        5,746.0        6,146.0        2,864        9,987       1,978.8  sendmsg               
-      0.0           44,699          5        8,939.8        8,101.0        2,305       17,041       6,251.5  connect               
-      0.0           39,251          3       13,083.7       12,921.0        6,704       19,626       6,462.5  socketpair            
-      0.0           24,585         11        2,235.0        1,955.0        1,397        4,260         792.0  dup                   
-      0.0           15,225          4        3,806.3        4,015.5        2,794        4,400         726.7  send                  
-      0.0           12,362          1       12,362.0       12,362.0       12,362       12,362           0.0  fflush                
-      0.0           12,012          2        6,006.0        6,006.0        2,863        9,149       4,444.9  lockf                 
-      0.0           10,476          1       10,476.0       10,476.0       10,476       10,476           0.0  posix_fallocate       
-      0.0            8,590          1        8,590.0        8,590.0        8,590        8,590           0.0  ftruncate             
-      0.0            6,146          2        3,073.0        3,073.0        2,794        3,352         394.6  fwrite                
-      0.0            3,771          2        1,885.5        1,885.5        1,467        2,304         591.8  fcntl64               
-      0.0            2,933          1        2,933.0        2,933.0        2,933        2,933           0.0  bind                  
-      0.0            2,374          1        2,374.0        2,374.0        2,374        2,374           0.0  listen                
+     63.0  150,621,411,117      8,288   18,173,432.8   10,075,754.0        1,001  250,249,538  27,404,932.4  poll                  
+     22.2   53,015,470,470        106  500,145,947.8  500,078,344.0  500,020,400  500,488,176     130,153.6  pthread_cond_timedwait
+     14.7   35,044,933,302      2,712   12,922,173.0    3,390,913.5        1,593   29,689,496  11,891,499.2  writev                
+      0.1      222,722,117      1,169      190,523.6       21,009.0        1,002   12,179,182     594,884.6  ioctl                 
+      0.0       23,801,155         71      335,227.5      417,902.0       10,650      850,663     281,688.6  pthread_rwlock_wrlock 
+      0.0        4,948,027         64       77,312.9       10,935.0        5,039    1,898,164     246,820.3  mmap64                
+      0.0        4,032,316      1,883        2,141.4        1,633.0        1,001       31,539       1,517.6  recvmsg               
+      0.0        1,938,209        661        2,932.2        2,775.0        2,324        9,338         628.1  ppoll                 
+      0.0        1,550,646         10      155,064.6       48,005.5       39,945      803,083     245,962.1  sem_timedwait         
+      0.0        1,538,791         19       80,989.0       14,918.0        4,268      450,904     135,868.0  munmap                
+      0.0        1,523,256         64       23,800.9       23,023.0        1,533       50,845       7,983.4  pthread_rwlock_rdlock 
+      0.0          953,537        162        5,886.0        1,252.5        1,001       40,736      10,543.4  read                  
+      0.0          604,923         12       50,410.3        6,331.5        1,623      425,026     121,861.3  fread                 
+      0.0          570,783         97        5,884.4        4,759.0        2,575       16,441       2,986.4  open64                
+      0.0          469,532        158        2,971.7        1,723.0        1,102      109,134       9,076.3  recv                  
+      0.0          422,643        123        3,436.1        2,144.0        2,054       54,512       5,611.3  open                  
+      0.0          387,976          4       96,994.0       87,228.0       63,720      149,800      40,977.2  pthread_create        
+      0.0          378,678         56        6,762.1        4,012.0        1,413      108,933      14,257.2  fopen                 
+      0.0          276,371         42        6,580.3        7,333.5        1,252       15,168       3,178.3  fclose                
+      0.0          232,475         18       12,915.3        8,255.5        2,514      101,129      22,256.4  mmap                  
+      0.0           91,611          2       45,805.5       45,805.5       10,820       80,791      49,477.0  openat                
+      0.0           83,677          4       20,919.3       19,722.0       18,385       25,848       3,360.5  pthread_mutex_lock    
+      0.0           61,746          1       61,746.0       61,746.0       61,746       61,746           0.0  fgets                 
+      0.0           46,117         11        4,192.5        4,187.0        1,954        7,113       1,740.8  sendmsg               
+      0.0           44,463          6        7,410.5        8,055.0        3,406       10,860       3,198.4  socket                
+      0.0           33,443          4        8,360.8        8,130.5        5,761       11,421       2,679.2  mprotect              
+      0.0           33,112          3       11,037.3       11,632.0        9,538       11,942       1,307.7  socketpair            
+      0.0           32,462          5        6,492.4        4,769.0        1,813       11,943       4,467.4  connect               
+      0.0           22,503          4        5,625.8        6,171.5        3,537        6,623       1,424.6  pipe2                 
+      0.0           19,526          6        3,254.3        1,723.0        1,032        8,787       3,079.2  pthread_cond_broadcast
+      0.0           18,485         11        1,680.5        1,513.0        1,172        2,535         485.4  write                 
+      0.0           13,646          1       13,646.0       13,646.0       13,646       13,646           0.0  pthread_cond_wait     
+      0.0           13,544          2        6,772.0        6,772.0        1,001       12,543       8,161.4  pthread_cond_signal   
+      0.0           11,461          4        2,865.3        2,925.5        1,272        4,338       1,437.5  send                  
+      0.0           10,049          2        5,024.5        5,024.5        1,022        9,027       5,660.4  fflush                
+      0.0            9,377          8        1,172.1        1,122.0        1,002        1,412         159.8  fcntl                 
+      0.0            6,662          2        3,331.0        3,331.0        1,513        5,149       2,571.0  lockf                 
+      0.0            5,811          1        5,811.0        5,811.0        5,811        5,811           0.0  posix_fallocate       
+      0.0            4,298          2        2,149.0        2,149.0        1,462        2,836         971.6  fwrite                
+      0.0            3,787          1        3,787.0        3,787.0        3,787        3,787           0.0  ftruncate             
+      0.0            2,355          1        2,355.0        2,355.0        2,355        2,355           0.0  shutdown              
+      0.0            2,235          1        2,235.0        2,235.0        2,235        2,235           0.0  bind                  
+      0.0            1,142          1        1,142.0        1,142.0        1,142        1,142           0.0  fcntl64               
 
 [5/8] Executing 'cuda_api_sum' stats report
 
- Time (%)  Total Time (ns)  Num Calls   Avg (ns)     Med (ns)    Min (ns)   Max (ns)   StdDev (ns)              Name            
- --------  ---------------  ---------  -----------  -----------  ---------  ---------  -----------  ----------------------------
-     70.9    5,845,041,178     12,801    456,608.2     45,956.0      2,863  3,270,070    945,938.4  cudaEventSynchronize        
-     20.1    1,658,580,236    352,409      4,706.4      4,261.0      2,724  2,406,057      7,137.4  cudaLaunchKernel            
-      3.7      302,500,981     13,211     22,897.7      7,683.0      5,168    378,544     36,098.0  cudaMemcpy                  
-      2.4      200,882,618      5,602     35,859.1     15,994.0     10,407    306,816     64,803.0  cudaMemcpyFromSymbol        
-      1.7      142,544,475     26,406      5,398.2      4,400.0      2,793    247,241      4,410.7  cudaEventRecord             
-      0.5       44,174,809      4,809      9,185.9      7,194.0      4,750     91,563      6,027.6  cudaMemset                  
-      0.3       25,897,265        401     64,581.7     57,620.0     37,714    251,431     20,587.6  cudaGraphicsUnmapResources  
-      0.3       20,934,376        402     52,075.6     31,988.0     15,226  7,071,567    351,106.4  cudaGraphicsMapResources    
-      0.0        1,163,916          1  1,163,916.0  1,163,916.0  1,163,916  1,163,916          0.0  cudaMemcpyToSymbol          
-      0.0          907,455          2    453,727.5    453,727.5    312,472    594,983    199,765.4  cudaGraphicsGLRegisterBuffer
-      0.0          308,776         22     14,035.3      3,806.0      2,864     94,846     26,568.0  cudaMalloc                  
-      0.0           23,816         10      2,381.6      1,886.0      1,397      8,032      2,010.9  cudaEventCreate             
-      0.0            5,727          1      5,727.0      5,727.0      5,727      5,727          0.0  cudaFree                    
-      0.0            2,933          1      2,933.0      2,933.0      2,933      2,933          0.0  cuModuleGetLoadingMode      
+ Time (%)  Total Time (ns)  Num Calls   Avg (ns)     Med (ns)    Min (ns)   Max (ns)   StdDev (ns)               Name             
+ --------  ---------------  ---------  -----------  -----------  ---------  ---------  -----------  ------------------------------
+     82.0   11,881,343,164     21,152    561,712.5     56,461.0        671  3,913,988  1,143,413.1  cudaEventSynchronize          
+     11.5    1,668,069,440    582,342      2,864.4      2,655.0      2,314  1,819,997      6,424.5  cudaLaunchKernel              
+      2.7      392,421,844     21,819     17,985.3      4,379.0      3,376    310,361     31,631.3  cudaMemcpy                    
+      2.2      324,141,293      9,254     35,027.2     13,616.0      8,065    327,483     74,868.5  cudaMemcpyFromSymbol          
+      1.1      152,599,931     43,626      3,497.9      3,075.0      2,264    770,533      6,106.0  cudaEventRecord               
+      0.3       36,850,839      7,940      4,641.2      3,998.0      2,695    118,411      2,697.6  cudaMemset                    
+      0.1       13,873,488        662     20,956.9     11,416.0      6,743  5,513,863    213,843.8  cudaGraphicsMapResources      
+      0.1       10,751,651        662     16,241.2     15,408.5     13,305     89,097      4,367.1  cudaGraphicsUnmapResources    
+      0.0        1,723,206          1  1,723,206.0  1,723,206.0  1,723,206  1,723,206          0.0  cudaMemcpyToSymbol            
+      0.0        1,261,071          2    630,535.5    630,535.5    316,182    944,889    444,563.0  cudaGraphicsGLRegisterBuffer  
+      0.0          601,076          2    300,538.0    300,538.0    140,363    460,713    226,521.7  cudaGraphicsUnregisterResource
+      0.0          392,494         22     17,840.6      2,024.0      1,653    218,619     48,520.2  cudaMalloc                    
+      0.0          239,627         21     11,410.8      2,836.0      1,733    114,504     27,213.1  cudaFree                      
+      0.0           15,426          8      1,928.3        596.0        411     10,790      3,593.9  cudaEventDestroy              
+      0.0           12,703         10      1,270.3        376.0        301      8,906      2,686.1  cudaEventCreate               
+      0.0              922          1        922.0        922.0        922        922          0.0  cuModuleGetLoadingMode        
 
 [6/8] Executing 'cuda_gpu_kern_sum' stats report
 
  Time (%)  Total Time (ns)  Instances  Avg (ns)   Med (ns)   Min (ns)  Max (ns)  StdDev (ns)                                                  Name                                                
  --------  ---------------  ---------  ---------  ---------  --------  --------  -----------  ----------------------------------------------------------------------------------------------------
-     83.3    6,318,830,845    320,000   19,746.3   19,712.0    10,976    25,505      1,188.7  pressureSolve_kernel(int, float *, float *, float *, const float *, const int *, const float *, flo…
-      8.7      657,225,113      3,202  205,254.6  219,092.0    36,737   299,430     68,299.0  separate_kernel(const float *, const float *, float *, float *, float *, float *, float *, int *, i…
-      3.4      258,742,470      3,200   80,857.0   88,194.0    16,288    92,898     14,748.6  p2gScatter_kernel(float *, float *, const float *, const float *, const float *, int, int, float, f…
-      0.9       67,738,139      1,600   42,336.3   45,920.5     9,152    48,737      7,439.5  updateParticleDensity_kernel(float *, const float *, const float *, int, float, float, int, int)    
-      0.9       66,773,025      3,200   20,866.6   21,728.0     7,936    29,504      5,233.3  g2pGather_kernel(float *, const float *, const float *, const float *, const float *, const int *, …
-      0.5       39,839,553      1,601   24,884.2   27,104.0     8,320    31,232      5,077.1  scatter_kernel(float *, float *, int *, int *, int)                                                 
-      0.3       25,752,252      1,600   16,095.2   16,672.0     5,856    18,241      1,811.3  classifyCellsB_kernel(int *, const float *, const float *, int, float, int, int)                    
-      0.3       22,861,223      1,600   14,288.3   14,432.0    12,384    15,649        629.1  handleCollisions_kernel(float *, float *, float *, float *, float, float, float, float, float, int) 
-      0.3       20,690,581      1,601   12,923.5   13,792.0     4,736    14,561      1,798.7  histogram_kernel(float *, float *, int *, int)                                                      
-      0.3       18,990,207      1,600   11,868.9   11,872.0    10,784    12,672        249.0  savePrevVelocities_kernel(float *, float *, float *, float *, float *, float *, int)                
-      0.2       17,570,803      1,601   10,974.9    9,472.0     5,376    17,312      3,065.0  integrateParticles_kernel(float *, float *, float *, float *, float, float, int)                    
-      0.2       16,906,730        800   21,133.4   21,425.0    16,128    23,808      1,400.1  updateParticleColors_kernel(float *, float *, float *, const float *, const float *, const float *,…
-      0.2       14,975,215      3,200    4,679.8    4,704.0     2,592     5,440        349.4  p2gNormalize_kernel(float *, const float *, int)                                                    
-      0.2       12,982,611      1,601    8,109.1    8,128.0     4,896     8,833        406.7  void cub::CUB_200802_SM_860::DeviceScanKernel<cub::CUB_200802_SM_860::detail::scan::policy_hub<int,…
-      0.1       10,567,930      1,600    6,605.0    6,624.0     4,672     7,040        224.8  restoreSolidCells_kernel(float *, float *, const float *, const float *, const int *, int, int)     
-      0.1        8,205,003      1,600    5,128.1    5,152.0     4,128     5,568        163.4  classifyCellsA_kernel(int *, const float *, int)                                                    
-      0.1        5,833,315        800    7,291.6    7,328.0     5,600     8,096        281.0  updateCellColors_kernel(float *, const int *, const float *, float, int)                            
-      0.0        3,019,289        401    7,529.4    7,553.0     4,352     8,224        391.4  carveObstacle_kernel(float *, float *, float *, float, float, float, float, float)                  
-      0.0        2,458,660      1,601    1,535.7    1,536.0       928     1,601         70.9  void cub::CUB_200802_SM_860::DeviceScanInitKernel<cub::CUB_200802_SM_860::ScanTileState<int, (bool)…
-      0.0            5,632          1    5,632.0    5,632.0     5,632     5,632          0.0  computeRestDensity_kernel(const float *, const int *, float *, int *, int)                          
+     81.1   10,395,182,938    528,800   19,658.1   19,520.0    17,409    25,312        802.5  pressureSolve_kernel(int, float *, float *, float *, const float *, const int *, const float *, flo…
+     10.5    1,344,379,168      5,288  254,232.1  280,194.0    55,329   348,386     77,994.6  separate_kernel(const float *, const float *, float *, float *, float *, float *, float *, int *, i…
+      3.5      449,543,595      5,288   85,012.0   90,240.0    25,440    93,281     12,156.2  p2gScatter_kernel(float *, float *, const float *, const float *, const float *, int, int, float, f…
+      1.1      137,009,748      5,288   25,909.6   26,784.0    10,656    38,112      7,388.0  g2pGather_kernel(float *, const float *, const float *, const float *, const float *, const int *, …
+      0.9      117,242,262      2,644   44,342.8   46,896.5    14,272    48,864      6,114.9  updateParticleDensity_kernel(float *, const float *, const float *, int, float, float, int, int)    
+      0.6       70,551,053      2,644   26,683.5   28,672.5     9,184    31,456      4,722.8  scatter_kernel(float *, float *, int *, int *, int)                                                 
+      0.3       42,080,569      2,644   15,915.5   16,128.0     8,096    17,664      1,292.0  classifyCellsB_kernel(int *, const float *, const float *, int, float, int, int)                    
+      0.3       35,912,616      2,644   13,582.7   13,504.0    11,552    15,680        923.4  handleCollisions_kernel(float *, float *, float *, float *, float, float, float, float, float, int) 
+      0.3       34,593,122      2,644   13,083.6   13,664.0     6,688    14,400      1,429.3  histogram_kernel(float *, float *, int *, int)                                                      
+      0.2       31,643,808      2,644   11,968.2   11,968.0    10,912    12,768        246.0  savePrevVelocities_kernel(float *, float *, float *, float *, float *, float *, int)                
+      0.2       29,280,971      2,644   11,074.5    9,568.0     8,064    16,960      2,919.9  integrateParticles_kernel(float *, float *, float *, float *, float, float, int)                    
+      0.2       28,541,096      1,322   21,589.3   21,728.0    17,664    24,256      1,333.0  updateParticleColors_kernel(float *, float *, float *, const float *, const float *, const float *,…
+      0.2       24,801,626      5,288    4,690.2    4,704.0     3,968     5,536        249.2  p2gNormalize_kernel(float *, const float *, int)                                                    
+      0.2       21,682,005      2,644    8,200.5    8,160.0     7,648     9,152        252.0  void cub::CUB_200802_SM_860::DeviceScanKernel<cub::CUB_200802_SM_860::detail::scan::policy_hub<int,…
+      0.1       17,509,609      2,644    6,622.4    6,624.0     6,432     7,008         92.0  restoreSolidCells_kernel(float *, float *, const float *, const float *, const int *, int, int)     
+      0.1       13,423,741      2,644    5,077.1    5,088.0     4,544     5,600        170.0  classifyCellsA_kernel(int *, const float *, int)                                                    
+      0.1        9,801,653      1,322    7,414.3    7,424.0     6,496     9,376        310.1  updateCellColors_kernel(float *, const int *, const float *, float, int)                            
+      0.0        5,083,557        661    7,690.7    7,680.0     6,976     8,608        192.4  carveObstacle_kernel(float *, float *, float *, float, float, float, float, float)                  
+      0.0        4,009,914      2,644    1,516.6    1,504.0     1,472     1,601         29.1  void cub::CUB_200802_SM_860::DeviceScanInitKernel<cub::CUB_200802_SM_860::ScanTileState<int, (bool)…
+      0.0            9,184          1    9,184.0    9,184.0     9,184     9,184          0.0  computeRestDensity_kernel(const float *, const int *, float *, int *, int)                          
 
 [7/8] Executing 'cuda_gpu_mem_time_sum' stats report
 
  Time (%)  Total Time (ns)  Count   Avg (ns)  Med (ns)  Min (ns)  Max (ns)  StdDev (ns)            Operation           
  --------  ---------------  ------  --------  --------  --------  --------  -----------  ------------------------------
-     59.7      104,840,125   7,604  13,787.5   1,857.0       896    78,561     20,180.8  [CUDA memcpy Device-to-Host]  
-     31.7       55,674,826  11,205   4,968.7   5,152.0     2,816     6,528        839.2  [CUDA memcpy Device-to-Device]
-      8.5       14,953,577   4,809   3,109.5   2,560.0       320     4,992        858.2  [CUDA memset]                 
-      0.1          177,603       5  35,520.6  48,001.0       320    48,385     20,795.7  [CUDA memcpy Host-to-Device]  
+     60.1      177,322,378  12,561  14,116.9   1,984.0       768    49,761     20,048.7  [CUDA memcpy Device-to-Host]  
+     31.4       92,549,908  18,508   5,000.5   5,280.0     3,840     6,560        823.6  [CUDA memcpy Device-to-Device]
+      8.4       24,919,048   7,940   3,138.4   2,528.0       544     5,152        899.0  [CUDA memset]                 
+      0.1          183,201       5  36,640.2  48,577.0       512    49,952     21,141.2  [CUDA memcpy Host-to-Device]  
 
 [8/8] Executing 'cuda_gpu_mem_size_sum' stats report
 
  Total (MB)  Count   Avg (MB)  Med (MB)  Min (MB)  Max (MB)  StdDev (MB)            Operation           
  ----------  ------  --------  --------  --------  --------  -----------  ------------------------------
-  3,530.872  11,205     0.315     0.304     0.207     0.573        0.114  [CUDA memcpy Device-to-Device]
-  1,583.226   4,809     0.329     0.207     0.000     0.573        0.172  [CUDA memset]                 
-    608.890   7,604     0.080     0.000     0.000     0.304        0.134  [CUDA memcpy Device-to-Host]  
+  5,831.807  18,508     0.315     0.304     0.207     0.573        0.114  [CUDA memcpy Device-to-Device]
+  2,614.133   7,940     0.329     0.207     0.000     0.573        0.172  [CUDA memset]                 
+  1,006.191  12,561     0.080     0.000     0.000     0.304        0.134  [CUDA memcpy Device-to-Host]  
       1.121       5     0.224     0.304     0.000     0.304        0.132  [CUDA memcpy Host-to-Device]  
 
 Generated:
 	/home/lynaten/Projects/cuda-flip-fluid-simulator/fluid_timeline_res200.nsys-rep
 	/home/lynaten/Projects/cuda-flip-fluid-simulator/fluid_timeline_res200.sqlite
-==PROF== Connected to process 5068 (/home/lynaten/Projects/cuda-flip-fluid-simulator/flip_cuda/flip)
-==ERROR== ERR_NVGPUCTRPERM - The user does not have permission to access NVIDIA GPU Performance Counters on the target device 0. For instructions on enabling permissions and to get more information see https://developer.nvidia.com/ERR_NVGPUCTRPERM
-[BENCHMARK_CUDA_RESULT] res=100 T1=0.265ms T2=1.361ms T3=0.183ms T4=1.332ms T5=0.188ms T6=16.209ms T7=0.331ms T8=0.333ms T9=79.213ms T10=0.464ms T_total=101.058ms particles=18352
-[T10_OVERHEAD] res=100 T10=0.464ms T_total=101.058ms overhead=0.46%
-==PROF== Disconnected from process 5068
+==PROF== Connected to process 4383 (/home/lynaten/Projects/cuda-flip-fluid-simulator/flip_cuda/flip)
+==PROF== Profiling "pressureSolve_kernel" - 0 (1/10): 0%....50%....100% - 10 passes
+==PROF== Profiling "pressureSolve_kernel" - 1 (2/10): 0%....50%....100% - 10 passes
+==PROF== Profiling "pressureSolve_kernel" - 2 (3/10): 0%....50%....100% - 10 passes
+==PROF== Profiling "pressureSolve_kernel" - 3 (4/10): 0%....50%....100% - 10 passes
+==PROF== Profiling "pressureSolve_kernel" - 4 (5/10): 0%....50%....100% - 10 passes
+==PROF== Profiling "pressureSolve_kernel" - 5 (6/10): 0%....50%....100% - 10 passes
+==PROF== Profiling "pressureSolve_kernel" - 6 (7/10): 0%....50%....100% - 10 passes
+==PROF== Profiling "pressureSolve_kernel" - 7 (8/10): 0%....50%....100% - 10 passes
+==PROF== Profiling "pressureSolve_kernel" - 8 (9/10): 0%....50%....100% - 10 passes
+==PROF== Profiling "pressureSolve_kernel" - 9 (10/10): 0%....50%....100% - 10 passes
+[BENCHMARK_CUDA_RESULT] res=100 T1=0.100ms T2=0.639ms T3=0.075ms T4=0.565ms T5=0.091ms T6=6.776ms T7=0.145ms T8=0.142ms T9=55.135ms T10=0.474ms T_total=64.935ms particles=18352
+[T10_OVERHEAD] res=100 T10=0.474ms T_total=64.935ms overhead=0.73%
+==PROF== Disconnected from process 4383
+[4383] flip@127.0.0.1
+  pressureSolve_kernel(int, float *, float *, float *, const float *, const int *, const float *, float, bool, float) (9, 7, 1)x(16, 16, 1), Context 1, Stream 7, Device 0, CC 8.6
+    Section: Command line profiler metrics
+    --------------------------------------------------- ----------- ------------
+    Metric Name                                         Metric Unit Metric Value
+    --------------------------------------------------- ----------- ------------
+    dram__throughput.avg.pct_of_peak_sustained_elapsed            %         9.65
+    sm__throughput.avg.pct_of_peak_sustained_elapsed              %         6.75
+    smsp__warps_active.avg.pct_of_peak_sustained_active           %        35.41
+    --------------------------------------------------- ----------- ------------
+
+    Section: Compute Workload Analysis
+    -------------------- ----------- ------------
+    Metric Name          Metric Unit Metric Value
+    -------------------- ----------- ------------
+    Executed Ipc Active   inst/cycle         0.28
+    Executed Ipc Elapsed  inst/cycle         0.17
+    Issue Slots Busy               %         8.17
+    Issued Ipc Active     inst/cycle         0.33
+    SM Busy                        %         8.17
+    -------------------- ----------- ------------
+
+    OPT   Est. Local Speedup: 95.12%                                                                                    
+          All compute pipelines are under-utilized. Either this workload is very small or it doesn't issue enough warps 
+          per scheduler. Check the Launch Statistics and Scheduler Statistics sections for further details.             
+
+    Section: Memory Workload Analysis
+    ---------------------------- ----------- ------------
+    Metric Name                  Metric Unit Metric Value
+    ---------------------------- ----------- ------------
+    Memory Throughput                Gbyte/s        16.82
+    Mem Busy                               %        26.52
+    Max Bandwidth                          %        25.84
+    L1/TEX Hit Rate                        %        79.74
+    L2 Compression Success Rate            %            0
+    L2 Compression Ratio                                0
+    L2 Compression Input Sectors      sector            0
+    L2 Hit Rate                            %        73.80
+    Mem Pipes Busy                         %         6.75
+    ---------------------------- ----------- ------------
+
+  pressureSolve_kernel(int, float *, float *, float *, const float *, const int *, const float *, float, bool, float) (9, 7, 1)x(16, 16, 1), Context 1, Stream 7, Device 0, CC 8.6
+    Section: Command line profiler metrics
+    --------------------------------------------------- ----------- ------------
+    Metric Name                                         Metric Unit Metric Value
+    --------------------------------------------------- ----------- ------------
+    dram__throughput.avg.pct_of_peak_sustained_elapsed            %        10.93
+    sm__throughput.avg.pct_of_peak_sustained_elapsed              %         6.78
+    smsp__warps_active.avg.pct_of_peak_sustained_active           %        36.17
+    --------------------------------------------------- ----------- ------------
+
+    Section: Compute Workload Analysis
+    -------------------- ----------- ------------
+    Metric Name          Metric Unit Metric Value
+    -------------------- ----------- ------------
+    Executed Ipc Active   inst/cycle         0.29
+    Executed Ipc Elapsed  inst/cycle         0.17
+    Issue Slots Busy               %         8.60
+    Issued Ipc Active     inst/cycle         0.34
+    SM Busy                        %         8.60
+    -------------------- ----------- ------------
+
+    OPT   Est. Local Speedup: 94.86%                                                                                    
+          All compute pipelines are under-utilized. Either this workload is very small or it doesn't issue enough warps 
+          per scheduler. Check the Launch Statistics and Scheduler Statistics sections for further details.             
+
+    Section: Memory Workload Analysis
+    ---------------------------- ----------- ------------
+    Metric Name                  Metric Unit Metric Value
+    ---------------------------- ----------- ------------
+    Memory Throughput                Gbyte/s        19.04
+    Mem Busy                               %        24.97
+    Max Bandwidth                          %        25.89
+    L1/TEX Hit Rate                        %        80.65
+    L2 Compression Success Rate            %            0
+    L2 Compression Ratio                                0
+    L2 Compression Input Sectors      sector            0
+    L2 Hit Rate                            %        73.13
+    Mem Pipes Busy                         %         6.78
+    ---------------------------- ----------- ------------
+
+  pressureSolve_kernel(int, float *, float *, float *, const float *, const int *, const float *, float, bool, float) (9, 7, 1)x(16, 16, 1), Context 1, Stream 7, Device 0, CC 8.6
+    Section: Command line profiler metrics
+    --------------------------------------------------- ----------- ------------
+    Metric Name                                         Metric Unit Metric Value
+    --------------------------------------------------- ----------- ------------
+    dram__throughput.avg.pct_of_peak_sustained_elapsed            %         9.44
+    sm__throughput.avg.pct_of_peak_sustained_elapsed              %         6.87
+    smsp__warps_active.avg.pct_of_peak_sustained_active           %        35.23
+    --------------------------------------------------- ----------- ------------
+
+    Section: Compute Workload Analysis
+    -------------------- ----------- ------------
+    Metric Name          Metric Unit Metric Value
+    -------------------- ----------- ------------
+    Executed Ipc Active   inst/cycle         0.29
+    Executed Ipc Elapsed  inst/cycle         0.17
+    Issue Slots Busy               %         8.60
+    Issued Ipc Active     inst/cycle         0.34
+    SM Busy                        %         8.60
+    -------------------- ----------- ------------
+
+    OPT   Est. Local Speedup: 94.87%                                                                                    
+          All compute pipelines are under-utilized. Either this workload is very small or it doesn't issue enough warps 
+          per scheduler. Check the Launch Statistics and Scheduler Statistics sections for further details.             
+
+    Section: Memory Workload Analysis
+    ---------------------------- ----------- ------------
+    Metric Name                  Metric Unit Metric Value
+    ---------------------------- ----------- ------------
+    Memory Throughput                Gbyte/s        16.45
+    Mem Busy                               %        24.41
+    Max Bandwidth                          %        24.97
+    L1/TEX Hit Rate                        %        80.22
+    L2 Compression Success Rate            %            0
+    L2 Compression Ratio                                0
+    L2 Compression Input Sectors      sector            0
+    L2 Hit Rate                            %        70.72
+    Mem Pipes Busy                         %         6.87
+    ---------------------------- ----------- ------------
+
+  pressureSolve_kernel(int, float *, float *, float *, const float *, const int *, const float *, float, bool, float) (9, 7, 1)x(16, 16, 1), Context 1, Stream 7, Device 0, CC 8.6
+    Section: Command line profiler metrics
+    --------------------------------------------------- ----------- ------------
+    Metric Name                                         Metric Unit Metric Value
+    --------------------------------------------------- ----------- ------------
+    dram__throughput.avg.pct_of_peak_sustained_elapsed            %        10.16
+    sm__throughput.avg.pct_of_peak_sustained_elapsed              %         6.52
+    smsp__warps_active.avg.pct_of_peak_sustained_active           %        40.32
+    --------------------------------------------------- ----------- ------------
+
+    Section: Compute Workload Analysis
+    -------------------- ----------- ------------
+    Metric Name          Metric Unit Metric Value
+    -------------------- ----------- ------------
+    Executed Ipc Active   inst/cycle         0.30
+    Executed Ipc Elapsed  inst/cycle         0.16
+    Issue Slots Busy               %         8.83
+    Issued Ipc Active     inst/cycle         0.35
+    SM Busy                        %         8.83
+    -------------------- ----------- ------------
+
+    OPT   Est. Local Speedup: 94.73%                                                                                    
+          All compute pipelines are under-utilized. Either this workload is very small or it doesn't issue enough warps 
+          per scheduler. Check the Launch Statistics and Scheduler Statistics sections for further details.             
+
+    Section: Memory Workload Analysis
+    ---------------------------- ----------- ------------
+    Metric Name                  Metric Unit Metric Value
+    ---------------------------- ----------- ------------
+    Memory Throughput                Gbyte/s        17.71
+    Mem Busy                               %        24.04
+    Max Bandwidth                          %        25.38
+    L1/TEX Hit Rate                        %        80.86
+    L2 Compression Success Rate            %            0
+    L2 Compression Ratio                                0
+    L2 Compression Input Sectors      sector            0
+    L2 Hit Rate                            %        71.28
+    Mem Pipes Busy                         %         6.52
+    ---------------------------- ----------- ------------
+
+  pressureSolve_kernel(int, float *, float *, float *, const float *, const int *, const float *, float, bool, float) (9, 7, 1)x(16, 16, 1), Context 1, Stream 7, Device 0, CC 8.6
+    Section: Command line profiler metrics
+    --------------------------------------------------- ----------- ------------
+    Metric Name                                         Metric Unit Metric Value
+    --------------------------------------------------- ----------- ------------
+    dram__throughput.avg.pct_of_peak_sustained_elapsed            %        10.33
+    sm__throughput.avg.pct_of_peak_sustained_elapsed              %         6.57
+    smsp__warps_active.avg.pct_of_peak_sustained_active           %        39.25
+    --------------------------------------------------- ----------- ------------
+
+    Section: Compute Workload Analysis
+    -------------------- ----------- ------------
+    Metric Name          Metric Unit Metric Value
+    -------------------- ----------- ------------
+    Executed Ipc Active   inst/cycle         0.28
+    Executed Ipc Elapsed  inst/cycle         0.17
+    Issue Slots Busy               %         8.27
+    Issued Ipc Active     inst/cycle         0.33
+    SM Busy                        %         8.27
+    -------------------- ----------- ------------
+
+    OPT   Est. Local Speedup: 95.06%                                                                                    
+          All compute pipelines are under-utilized. Either this workload is very small or it doesn't issue enough warps 
+          per scheduler. Check the Launch Statistics and Scheduler Statistics sections for further details.             
+
+    Section: Memory Workload Analysis
+    ---------------------------- ----------- ------------
+    Metric Name                  Metric Unit Metric Value
+    ---------------------------- ----------- ------------
+    Memory Throughput                Gbyte/s        18.03
+    Mem Busy                               %        26.08
+    Max Bandwidth                          %        25.66
+    L1/TEX Hit Rate                        %        79.58
+    L2 Compression Success Rate            %            0
+    L2 Compression Ratio                                0
+    L2 Compression Input Sectors      sector            0
+    L2 Hit Rate                            %        76.07
+    Mem Pipes Busy                         %         6.57
+    ---------------------------- ----------- ------------
+
+  pressureSolve_kernel(int, float *, float *, float *, const float *, const int *, const float *, float, bool, float) (9, 7, 1)x(16, 16, 1), Context 1, Stream 7, Device 0, CC 8.6
+    Section: Command line profiler metrics
+    --------------------------------------------------- ----------- ------------
+    Metric Name                                         Metric Unit Metric Value
+    --------------------------------------------------- ----------- ------------
+    dram__throughput.avg.pct_of_peak_sustained_elapsed            %        10.26
+    sm__throughput.avg.pct_of_peak_sustained_elapsed              %         6.50
+    smsp__warps_active.avg.pct_of_peak_sustained_active           %        38.36
+    --------------------------------------------------- ----------- ------------
+
+    Section: Compute Workload Analysis
+    -------------------- ----------- ------------
+    Metric Name          Metric Unit Metric Value
+    -------------------- ----------- ------------
+    Executed Ipc Active   inst/cycle         0.28
+    Executed Ipc Elapsed  inst/cycle         0.16
+    Issue Slots Busy               %         8.08
+    Issued Ipc Active     inst/cycle         0.32
+    SM Busy                        %         8.08
+    -------------------- ----------- ------------
+
+    OPT   Est. Local Speedup: 95.18%                                                                                    
+          All compute pipelines are under-utilized. Either this workload is very small or it doesn't issue enough warps 
+          per scheduler. Check the Launch Statistics and Scheduler Statistics sections for further details.             
+
+    Section: Memory Workload Analysis
+    ---------------------------- ----------- ------------
+    Metric Name                  Metric Unit Metric Value
+    ---------------------------- ----------- ------------
+    Memory Throughput                Gbyte/s        17.90
+    Mem Busy                               %        28.74
+    Max Bandwidth                          %        26.16
+    L1/TEX Hit Rate                        %        79.41
+    L2 Compression Success Rate            %            0
+    L2 Compression Ratio                                0
+    L2 Compression Input Sectors      sector            0
+    L2 Hit Rate                            %        68.17
+    Mem Pipes Busy                         %         6.50
+    ---------------------------- ----------- ------------
+
+  pressureSolve_kernel(int, float *, float *, float *, const float *, const int *, const float *, float, bool, float) (9, 7, 1)x(16, 16, 1), Context 1, Stream 7, Device 0, CC 8.6
+    Section: Command line profiler metrics
+    --------------------------------------------------- ----------- ------------
+    Metric Name                                         Metric Unit Metric Value
+    --------------------------------------------------- ----------- ------------
+    dram__throughput.avg.pct_of_peak_sustained_elapsed            %         8.99
+    sm__throughput.avg.pct_of_peak_sustained_elapsed              %         6.37
+    smsp__warps_active.avg.pct_of_peak_sustained_active           %        38.80
+    --------------------------------------------------- ----------- ------------
+
+    Section: Compute Workload Analysis
+    -------------------- ----------- ------------
+    Metric Name          Metric Unit Metric Value
+    -------------------- ----------- ------------
+    Executed Ipc Active   inst/cycle         0.28
+    Executed Ipc Elapsed  inst/cycle         0.16
+    Issue Slots Busy               %         8.15
+    Issued Ipc Active     inst/cycle         0.33
+    SM Busy                        %         8.15
+    -------------------- ----------- ------------
+
+    OPT   Est. Local Speedup: 95.14%                                                                                    
+          All compute pipelines are under-utilized. Either this workload is very small or it doesn't issue enough warps 
+          per scheduler. Check the Launch Statistics and Scheduler Statistics sections for further details.             
+
+    Section: Memory Workload Analysis
+    ---------------------------- ----------- ------------
+    Metric Name                  Metric Unit Metric Value
+    ---------------------------- ----------- ------------
+    Memory Throughput                Gbyte/s        15.69
+    Mem Busy                               %        25.95
+    Max Bandwidth                          %        25.04
+    L1/TEX Hit Rate                        %        79.31
+    L2 Compression Success Rate            %            0
+    L2 Compression Ratio                                0
+    L2 Compression Input Sectors      sector            0
+    L2 Hit Rate                            %        74.74
+    Mem Pipes Busy                         %         6.37
+    ---------------------------- ----------- ------------
+
+  pressureSolve_kernel(int, float *, float *, float *, const float *, const int *, const float *, float, bool, float) (9, 7, 1)x(16, 16, 1), Context 1, Stream 7, Device 0, CC 8.6
+    Section: Command line profiler metrics
+    --------------------------------------------------- ----------- ------------
+    Metric Name                                         Metric Unit Metric Value
+    --------------------------------------------------- ----------- ------------
+    dram__throughput.avg.pct_of_peak_sustained_elapsed            %        10.18
+    sm__throughput.avg.pct_of_peak_sustained_elapsed              %         7.13
+    smsp__warps_active.avg.pct_of_peak_sustained_active           %        35.51
+    --------------------------------------------------- ----------- ------------
+
+    Section: Compute Workload Analysis
+    -------------------- ----------- ------------
+    Metric Name          Metric Unit Metric Value
+    -------------------- ----------- ------------
+    Executed Ipc Active   inst/cycle         0.28
+    Executed Ipc Elapsed  inst/cycle         0.18
+    Issue Slots Busy               %         8.22
+    Issued Ipc Active     inst/cycle         0.33
+    SM Busy                        %         8.22
+    -------------------- ----------- ------------
+
+    OPT   Est. Local Speedup: 95.09%                                                                                    
+          All compute pipelines are under-utilized. Either this workload is very small or it doesn't issue enough warps 
+          per scheduler. Check the Launch Statistics and Scheduler Statistics sections for further details.             
+
+    Section: Memory Workload Analysis
+    ---------------------------- ----------- ------------
+    Metric Name                  Metric Unit Metric Value
+    ---------------------------- ----------- ------------
+    Memory Throughput                Gbyte/s        17.75
+    Mem Busy                               %        26.33
+    Max Bandwidth                          %        24.78
+    L1/TEX Hit Rate                        %        79.87
+    L2 Compression Success Rate            %            0
+    L2 Compression Ratio                                0
+    L2 Compression Input Sectors      sector            0
+    L2 Hit Rate                            %        70.42
+    Mem Pipes Busy                         %         7.13
+    ---------------------------- ----------- ------------
+
+  pressureSolve_kernel(int, float *, float *, float *, const float *, const int *, const float *, float, bool, float) (9, 7, 1)x(16, 16, 1), Context 1, Stream 7, Device 0, CC 8.6
+    Section: Command line profiler metrics
+    --------------------------------------------------- ----------- ------------
+    Metric Name                                         Metric Unit Metric Value
+    --------------------------------------------------- ----------- ------------
+    dram__throughput.avg.pct_of_peak_sustained_elapsed            %        10.02
+    sm__throughput.avg.pct_of_peak_sustained_elapsed              %         6.60
+    smsp__warps_active.avg.pct_of_peak_sustained_active           %        36.07
+    --------------------------------------------------- ----------- ------------
+
+    Section: Compute Workload Analysis
+    -------------------- ----------- ------------
+    Metric Name          Metric Unit Metric Value
+    -------------------- ----------- ------------
+    Executed Ipc Active   inst/cycle         0.28
+    Executed Ipc Elapsed  inst/cycle         0.17
+    Issue Slots Busy               %         8.22
+    Issued Ipc Active     inst/cycle         0.33
+    SM Busy                        %         8.22
+    -------------------- ----------- ------------
+
+    OPT   Est. Local Speedup: 95.09%                                                                                    
+          All compute pipelines are under-utilized. Either this workload is very small or it doesn't issue enough warps 
+          per scheduler. Check the Launch Statistics and Scheduler Statistics sections for further details.             
+
+    Section: Memory Workload Analysis
+    ---------------------------- ----------- ------------
+    Metric Name                  Metric Unit Metric Value
+    ---------------------------- ----------- ------------
+    Memory Throughput                Gbyte/s        17.45
+    Mem Busy                               %        25.67
+    Max Bandwidth                          %        25.97
+    L1/TEX Hit Rate                        %        79.89
+    L2 Compression Success Rate            %            0
+    L2 Compression Ratio                                0
+    L2 Compression Input Sectors      sector            0
+    L2 Hit Rate                            %        72.98
+    Mem Pipes Busy                         %         6.60
+    ---------------------------- ----------- ------------
+
+  pressureSolve_kernel(int, float *, float *, float *, const float *, const int *, const float *, float, bool, float) (9, 7, 1)x(16, 16, 1), Context 1, Stream 7, Device 0, CC 8.6
+    Section: Command line profiler metrics
+    --------------------------------------------------- ----------- ------------
+    Metric Name                                         Metric Unit Metric Value
+    --------------------------------------------------- ----------- ------------
+    dram__throughput.avg.pct_of_peak_sustained_elapsed            %        10.81
+    sm__throughput.avg.pct_of_peak_sustained_elapsed              %         6.92
+    smsp__warps_active.avg.pct_of_peak_sustained_active           %        36.65
+    --------------------------------------------------- ----------- ------------
+
+    Section: Compute Workload Analysis
+    -------------------- ----------- ------------
+    Metric Name          Metric Unit Metric Value
+    -------------------- ----------- ------------
+    Executed Ipc Active   inst/cycle         0.26
+    Executed Ipc Elapsed  inst/cycle         0.17
+    Issue Slots Busy               %         7.73
+    Issued Ipc Active     inst/cycle         0.31
+    SM Busy                        %         7.73
+    -------------------- ----------- ------------
+
+    OPT   Est. Local Speedup: 95.39%                                                                                    
+          All compute pipelines are under-utilized. Either this workload is very small or it doesn't issue enough warps 
+          per scheduler. Check the Launch Statistics and Scheduler Statistics sections for further details.             
+
+    Section: Memory Workload Analysis
+    ---------------------------- ----------- ------------
+    Metric Name                  Metric Unit Metric Value
+    ---------------------------- ----------- ------------
+    Memory Throughput                Gbyte/s        18.81
+    Mem Busy                               %        29.42
+    Max Bandwidth                          %        26.54
+    L1/TEX Hit Rate                        %        80.19
+    L2 Compression Success Rate            %            0
+    L2 Compression Ratio                                0
+    L2 Compression Input Sectors      sector            0
+    L2 Hit Rate                            %        69.71
+    Mem Pipes Busy                         %         6.92
+    ---------------------------- ----------- ------------
+
